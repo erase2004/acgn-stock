@@ -1,15 +1,11 @@
 'use strict';
 import { $ } from 'meteor/jquery';
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { dbProducts } from '/db/dbProducts';
 import { dbSeason } from '/db/dbSeason';
-import { dbVoteRecord } from '/db/dbVoteRecord';
-import { voteProduct } from '../utils/methods';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
 import { shouldStopSubscribe } from '../utils/idle';
 
 inheritedShowLoadingOnSubscribing(Template.productCenterBySeason);
@@ -174,39 +170,4 @@ Template.productListBySeasonTable.events({
 
 Template.productInfoBySeasonTable.onCreated(function() {
   this.subscribe('queryMyLikeProduct', this.data.companyId);
-});
-Template.productInfoBySeasonTable.helpers({
-  cannotVote() {
-    const companyId = this.companyId;
-    const user = Meteor.user();
-    const userId = user ? user._id : false;
-
-    return ! (
-      this.overdue === 1 &&
-      userId &&
-      dbVoteRecord.find({companyId, userId}).count() < 1
-    );
-  }
-});
-Template.productInfoBySeasonTable.events({
-  'click [data-vote-product]'(event, templateInstance) {
-    event.preventDefault();
-    const productData = templateInstance.data;
-    voteProduct(productData._id, productData.companyId);
-  },
-  'click [data-take-down]'(event, templateInstance) {
-    event.preventDefault();
-    const productData = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '違規處理 - 產品下架',
-      message: `請輸入處理事由：`,
-      callback: function(message) {
-        if (message) {
-          const productId = productData._id;
-          Meteor.customCall('takeDownProduct', {productId, message});
-        }
-      }
-    });
-  }
 });

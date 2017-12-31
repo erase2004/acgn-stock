@@ -2,7 +2,6 @@
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { DocHead } from 'meteor/kadira:dochead';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -14,10 +13,7 @@ import { dbDirectors } from '/db/dbDirectors';
 import { dbEmployees } from '/db/dbEmployees';
 import { dbTaxes } from '/db/dbTaxes';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
 import { shouldStopSubscribe } from '../utils/idle';
-import { currencyFormat } from '../utils/helpers';
-import { changeChairmanTitle } from '../utils/methods';
 import { accountInfoCommonHelpers } from './helpers';
 
 inheritedShowLoadingOnSubscribing(Template.accountInfo);
@@ -114,176 +110,6 @@ Template.accountInfoBasic.helpers({
   }
 });
 
-Template.accountInfoBasic.events({
-  'click [data-action="fscAnnouncement"]'(event, templateInstance) {
-    event.preventDefault();
-    const accuseUser = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '金管會通告 - 輸入通知訊息',
-      message: `請輸入要通告的訊息：`,
-      callback: (message) => {
-        if (message) {
-          const userIds = [accuseUser._id];
-          Meteor.customCall('fscAnnouncement', { userIds, message });
-        }
-      }
-    });
-  },
-  'click [data-action="accuse"]'(event, templateInstance) {
-    event.preventDefault();
-    const accuseUser = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '舉報違規 - ' + accuseUser.profile.name,
-      message: `請輸入您要舉報的內容：`,
-      callback: (message) => {
-        if (message) {
-          const userId = accuseUser._id;
-          Meteor.customCall('accuseUser', userId, message);
-        }
-      }
-    });
-  },
-  'click [data-ban]'(event, templateInstance) {
-    event.preventDefault();
-    const banType = $(event.currentTarget).attr('data-ban');
-    let banActionText;
-    switch (banType) {
-      case 'accuse': {
-        banActionText = '禁止舉報違規';
-        break;
-      }
-      case 'deal': {
-        banActionText = '禁止投資下單';
-        break;
-      }
-      case 'chat': {
-        banActionText = '禁止聊天發言';
-        break;
-      }
-      case 'advertise': {
-        banActionText = '禁止廣告宣傳';
-        break;
-      }
-      case 'manager': {
-        banActionText = '禁止擔任經理';
-        break;
-      }
-    }
-    const accuseUserData = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '違規處理 - ' + accuseUserData.profile.name + ' - ' + banActionText,
-      message: `請輸入處理事由：`,
-      callback: (message) => {
-        if (message) {
-          const userId = accuseUserData._id;
-          Meteor.customCall('banUser', {userId, message, banType});
-        }
-      }
-    });
-  },
-  'click [data-action="forfeitUserMoney"]'(event, templateInstance) {
-    event.preventDefault();
-    const accuseUserData = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '課以罰金 - ' + accuseUserData.profile.name,
-      message: `請輸入處理事由：`,
-      callback: (reason) => {
-        if (reason) {
-          alertDialog.dialog({
-            type: 'prompt',
-            title: '課以罰金 - ' + accuseUserData.profile.name,
-            message: `請輸入罰金數額：`,
-            inputType: 'number',
-            customSetting: `min="0"`,
-            callback: (amount) => {
-              amount = parseInt(amount, 10);
-              if (amount && amount >= 0) {
-                const userId = accuseUserData._id;
-                Meteor.customCall('forfeitUserMoney', { userId, reason, amount });
-              }
-            }
-          });
-        }
-      }
-    });
-  },
-  'click [data-action="returnForfeitedUserMoney"]'(event, templateInstance) {
-    event.preventDefault();
-    const accuseUserData = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '退還罰金 - ' + accuseUserData.profile.name,
-      message: `請輸入處理事由：`,
-      callback: (reason) => {
-        if (reason) {
-          alertDialog.dialog({
-            type: 'prompt',
-            title: '退還罰金 - ' + accuseUserData.profile.name,
-            message: `請輸入退還金額：`,
-            inputType: 'number',
-            customSetting: `min="0"`,
-            callback: (amount) => {
-              amount = parseInt(amount, 10);
-              if (amount && amount > 0) {
-                const userId = accuseUserData._id;
-                Meteor.customCall('forfeitUserMoney', { userId, reason, amount: -amount });
-              }
-            }
-          });
-        }
-      }
-    });
-  },
-  'click [data-action="confiscateStocks"]'(event, templateInstance) {
-    event.preventDefault();
-    const accuseUserData = templateInstance.data;
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '沒收股份 - ' + accuseUserData.profile.name,
-      message: `請輸入處理事由：`,
-      callback: (message) => {
-        if (message) {
-          const userId = accuseUserData._id;
-          Meteor.customCall('confiscateStocks', {userId, message});
-        }
-      }
-    });
-  },
-  'click [data-action="unregisterEmployee"]'(event) {
-    event.preventDefault();
-    Meteor.customCall('unregisterEmployee');
-    // FIXME 底下改成 customCall 的 callback
-    alertDialog.alert('您已取消報名！');
-  },
-  'click [data-action="startVacation"]'(event) {
-    event.preventDefault();
-    alertDialog.confirm({
-      message: '確定要開始渡假嗎？',
-      callback: (result) => {
-        if (result) {
-          Meteor.customCall('startVacation', (err) => {
-            if (! err) {
-              alertDialog.alert('您已進入渡假模式！');
-            }
-          });
-        }
-      }
-    });
-  },
-  'click [data-action="toggleEndingVacation"]'(event) {
-    event.preventDefault();
-    Meteor.customCall('toggleEndingVacation', function(err, result) {
-      if (! err) {
-        alertDialog.alert(result ? '您已送出收假請求！' : '您已取消收假請求！');
-      }
-    });
-  }
-});
-
 export const companyTitleView = new ReactiveVar('chairman');
 Template.companyTitleTab.helpers({
   getClass(type) {
@@ -339,12 +165,6 @@ Template.chairmanTitleList.helpers({
       dataNumberPerPage: 10,
       offset: chairmanOffset
     };
-  }
-});
-Template.chairmanTitleList.events({
-  'click [data-action="changeChairmanTitle"]'() {
-    const companyData = this;
-    changeChairmanTitle(companyData);
   }
 });
 
@@ -428,34 +248,6 @@ Template.accountInfoTaxList.helpers({
       dataNumberPerPage: 10,
       offset: taxesOffset
     };
-  }
-});
-Template.accountInfoTaxList.events({
-  'click [data-pay]'(event) {
-    const taxId = new Mongo.ObjectID($(event.currentTarget).attr('data-pay'));
-    const taxData = dbTaxes.findOne(taxId);
-    if (taxData) {
-      const user = Meteor.user();
-      const totalNeedPay = taxData.tax + taxData.zombie + taxData.fine - taxData.paid;
-      const maxPayMoney = Math.min(user.profile.money, totalNeedPay);
-      if (maxPayMoney < 1) {
-        alertDialog.alert('您的金錢不足以繳納稅金！');
-      }
-      alertDialog.dialog({
-        type: 'prompt',
-        title: '繳納稅金',
-        message: `請輸入您要繳納的金額：(1~${currencyFormat(maxPayMoney)})`,
-        inputType: 'number',
-        defaultValue: maxPayMoney,
-        customSetting: `min="1" max="${maxPayMoney}"`,
-        callback: (amount) => {
-          amount = parseInt(amount, 10);
-          if (amount) {
-            Meteor.customCall('payTax', taxId, amount);
-          }
-        }
-      });
-    }
   }
 });
 

@@ -9,7 +9,6 @@ import { dbRuleAgendas } from '/db/dbRuleAgendas';
 import { dbRuleIssues } from '/db/dbRuleIssues';
 import { dbRuleIssueOptions } from '/db/dbRuleIssueOptions';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
 import { shouldStopSubscribe } from '../utils/idle';
 
 const rShowOptionVoteDetail = new ReactiveVar(null);
@@ -45,24 +44,6 @@ Template.ruleAgendaDetail.helpers({
 
     return dbRuleAgendas.findOne(agendaId);
   },
-  canVote(agendaData) {
-    const expireDate = new Date(agendaData.createdAt.getTime() + agendaData.duration * 60 * 60 * 1000);
-    if (expireDate < Date.now()) {
-      return false;
-    }
-    const userId = Meteor.userId();
-    if (Meteor.user().profile.ban.length > 0) {
-      return false;
-    }
-    if (! Meteor.user().createdAt || Date.now() - Meteor.user().createdAt.getTime() < Meteor.settings.public.voteUserNeedCreatedIn) {
-      return false;
-    }
-    if (agendaData.votes.indexOf(userId) >= 0) {
-      return false;
-    }
-
-    return true;
-  },
   getVoteHref() {
     const agendaId = FlowRouter.getParam('agendaId');
 
@@ -70,44 +51,6 @@ Template.ruleAgendaDetail.helpers({
   },
   showVoteDetailDialog() {
     return rShowOptionVoteDetail.get() !== null;
-  }
-});
-Template.ruleAgendaDetail.events({
-  'click [data-action="takeDownRuleAgenda"]'(event) {
-    event.preventDefault();
-    const agendaId = FlowRouter.getParam('agendaId');
-    const agendaData = dbRuleAgendas.findOne(agendaId);
-    alertDialog.confirm({
-      message: '確定要撤銷議程「' + agendaData.title + '」？',
-      callback: (result) => {
-        if (result) {
-          Meteor.customCall('takeDownRuleAgenda', agendaId, function(error) {
-            if (! error) {
-              const path = FlowRouter.path('ruleAgendaList');
-              FlowRouter.go(path);
-            }
-          });
-        }
-      }
-    });
-  },
-  'click [data-action="updateAgendaProposer"]'(event) {
-    event.preventDefault();
-    const agendaId = FlowRouter.getParam('agendaId');
-    const message = '請輸入提案人id：';
-
-    alertDialog.prompt({
-      message,
-      callback: (result) => {
-        if (result) {
-          Meteor.customCall('updateAgendaProposer', agendaId, result, function(error) {
-            if (! error) {
-              alertDialog.alert('修改成功！');
-            }
-          });
-        }
-      }
-    });
   }
 });
 

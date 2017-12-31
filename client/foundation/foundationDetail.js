@@ -10,7 +10,6 @@ import { dbFoundations } from '/db/dbFoundations';
 import { dbLog } from '/db/dbLog';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { formatDateTimeText } from '../utils/helpers';
-import { alertDialog } from '../layout/alertDialog';
 import { shouldStopSubscribe } from '../utils/idle';
 
 const rShowAllTags = new ReactiveVar(false);
@@ -58,69 +57,9 @@ Template.foundationDetail.helpers({
   }
 });
 Template.foundationDetail.events({
-  'click [data-action="changeCompanyName"]'(event) {
-    event.preventDefault();
-    const foundationId = FlowRouter.getParam('foundationId');
-    const companyData = dbFoundations.findOne(foundationId, {
-      fields: {
-        companyName: 1
-      }
-    });
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '公司更名',
-      message: `請輸入新的公司名稱：`,
-      defaultValue: companyData.companyName,
-      callback: (companyName) => {
-        if (companyName) {
-          Meteor.customCall('changeFoundCompanyName', foundationId, companyName);
-        }
-      }
-    });
-  },
   'click [data-action="showAllTags"]'(event) {
     event.preventDefault();
     rShowAllTags.set(true);
-  },
-  'click [data-action="markFoundationIllegal"]'(event) {
-    event.preventDefault();
-    const foundationId = FlowRouter.getParam('foundationId');
-    const companyData = dbFoundations.findOne(foundationId, {
-      fields: {
-        companyName: 1
-      }
-    });
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '設定違規標記',
-      message: '請輸入違規事由：',
-      defaultValue: companyData.illegalReason,
-      customSetting: `maxlength="10"`,
-      callback: (reason) => {
-        if (! reason) {
-          return;
-        }
-        if (reason.length > 10) {
-          alertDialog.alert('違規標記事由不可大於十個字！');
-
-          return;
-        }
-
-        Meteor.customCall('markFoundationIllegal', foundationId, reason);
-      }
-    });
-  },
-  'click [data-action="unmarkFoundationIllegal"]'(event) {
-    event.preventDefault();
-    const foundationId = FlowRouter.getParam('foundationId');
-    alertDialog.confirm({
-      message: '是否解除違規標記？',
-      callback: (result) => {
-        if (result) {
-          Meteor.customCall('unmarkFoundationIllegal', foundationId);
-        }
-      }
-    });
   }
 });
 

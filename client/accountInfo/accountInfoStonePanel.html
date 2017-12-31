@@ -11,16 +11,6 @@
         {{/each}}
       </div>
     </div>
-    {{#if isCurrentUser}}
-      <div class="col-12 flex-wrap my-2">
-        <h5>購買石頭</h5>
-        {{#each stoneType in buyableStoneTypeList}}
-          <a href="#" class="btn btn-sm btn-info m-1" data-action="buyStone" data-stone-type="{{stoneType}}">
-            購買{{stoneDisplayName stoneType}} (${{currencyFormat (stonePrice stoneType)}})
-          </a>
-        {{/each}}
-      </div>
-    {{/if}}
     <div class="col-12 my-2">
       <h5>已放置的石頭</h5>
       <table class="table table-bordered mt-3 w-100" style="table-layout: fixed;">

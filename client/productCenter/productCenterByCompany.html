@@ -26,11 +26,6 @@
           股東評價
           {{{getSortIcon 'likeCount'}}}
         </th>
-        {{#if currentUser.profile.isAdmin}}
-          <th class="text-center" style="width: 70px;" title="下架">
-            下架
-          </th>
-        {{/if}}
       </tr>
     </thead>
     <tbody>
@@ -48,26 +43,16 @@
               class="btn btn-primary btn-sm"
               type="button"
               data-like-product="{{product._id}}"
+              disabled="true"
             >
               {{product.likeCount}}
               <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
             </button>
           </td>
-          {{#if currentUser.profile.isAdmin}}
-            <td class="text-center px-2">
-              <button
-                class="btn btn-danger btn-sm"
-                type="button"
-                data-take-down="{{product._id}}"
-              >
-                下架
-              </button>
-            </td>
-          {{/if}}
         </tr>
       {{else}}
         <tr>
-          <td class="text-center text-truncate" colspan="4">這家公司尚未推出任何產品！</td>
+          <td class="text-center text-truncate" colspan="3">這家公司尚未推出任何產品！</td>
         </tr>
       {{/each}}
     </tbody>

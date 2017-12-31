@@ -7,13 +7,11 @@ import { dbCompanies } from '/db/dbCompanies';
 import { dbCompanyStones, stonePowerTable, stoneTypeList } from '/db/dbCompanyStones';
 import { getCurrentSeason } from '/db/dbSeason';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
-import { stoneDisplayName } from '../utils/helpers';
 
 inheritedShowLoadingOnSubscribing(Template.companyMiningMachine);
 
 const reactiveTimeToSeasonEnd = wrapFunction(() => {
-  return getCurrentSeason().endDate.getTime() - Date.now();
+  return getCurrentSeason().endDate.getTime() - new Date(Meteor.settings.public.lastRoundEndTime);
 }, 1000);
 
 Template.companyMiningMachine.onCreated(function() {
@@ -34,7 +32,7 @@ Template.companyMiningMachine.onCreated(function() {
 
 Template.companyMiningMachine.helpers({
   isInOperationTime() {
-    return reactiveTimeToSeasonEnd() < Meteor.settings.public.miningMachineOperationTime;
+    return (reactiveTimeToSeasonEnd() < Meteor.settings.public.miningMachineOperationTime) && (reactiveTimeToSeasonEnd >= 0);
   },
   stoneTypeList() {
     return stoneTypeList;
@@ -81,53 +79,5 @@ Template.companyMiningMachine.helpers({
       .map(([key]) => {
         return key;
       });
-  }
-});
-
-Template.companyMiningMachine.events({
-  'submit form[name="placeStoneForm"]'(event, templateInstance) {
-    event.preventDefault();
-
-    const companyId = FlowRouter.getParam('companyId');
-    const stoneType = templateInstance.$('select[name="stoneType"]').val();
-
-    if (! stoneTypeList.includes(stoneType)) {
-      return;
-    }
-
-    alertDialog.confirm({
-      title: '放置石頭',
-      message: `確定要放入<span class="text-info">${stoneDisplayName(stoneType)}</span>到挖礦機嗎？`,
-      callback: (result) => {
-        if (! result) {
-          return;
-        }
-
-        Meteor.customCall('placeStone', { companyId, stoneType });
-      }
-    });
-  },
-  'click [data-action="retriveStone"]'(event) {
-    event.preventDefault();
-
-    const companyId = FlowRouter.getParam('companyId');
-    const userId = Meteor.userId();
-    const { stoneType } = dbCompanyStones.findOne({ companyId, userId }) || {};
-
-    if (! stoneType) {
-      return;
-    }
-
-    alertDialog.confirm({
-      title: '取回石頭',
-      message: `確定要從挖礦機取回<span class="text-info">${stoneDisplayName(stoneType)}</span>嗎？`,
-      callback: (result) => {
-        if (! result) {
-          return;
-        }
-
-        Meteor.customCall('retriveStone', { companyId });
-      }
-    });
   }
 });

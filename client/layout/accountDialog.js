@@ -44,14 +44,6 @@ Template.accountDialog.events({
     event.preventDefault();
     const dialogMode = rAccountDialogMode.get();
     switch (dialogMode) {
-      case 'validatePTT': {
-        Meteor.customCall('validatePTTAccount', rUserName.get());
-        break;
-      }
-      case 'validateBahamut': {
-        Meteor.customCall('validateBahamutAccount', rUserName.get());
-        break;
-      }
       case 'loginPTT':
       case 'loginBahamut': {
         const username = templateInstance.$('#loginUserName').val();
@@ -70,7 +62,7 @@ Template.accountDialog.events({
             tryLogin(username, password, type);
           }
           else {
-            onGotValidateCode(result, type);
+            alertDialog.alert('使用者資訊不存在');
           }
         });
         break;
@@ -82,12 +74,6 @@ Template.accountDialog.events({
 const utilHelpers = {
   displayByDialogMode() {
     switch (rAccountDialogMode.get()) {
-      case 'validatePTT': {
-        return 'accountDialogBodyValidatePTT';
-      }
-      case 'validateBahamut': {
-        return 'accountDialogBodyValidateBahamut';
-      }
       case 'loginPTT': {
         return 'accountDialogBodyLoginPTT';
       }
@@ -104,8 +90,6 @@ const utilHelpers = {
   }
 };
 Template.accountDialog.helpers(utilHelpers);
-Template.accountDialogBodyValidatePTT.helpers(utilHelpers);
-Template.accountDialogBodyValidateBahamut.helpers(utilHelpers);
 Template.accountDialogBodyLoginPTT.helpers(utilHelpers);
 Template.accountDialogBodyLoginBahamut.helpers(utilHelpers);
 
@@ -116,32 +100,11 @@ function tryLogin(username, password, type) {
     resolveTask();
     if (error) {
       if (error.message === 'Incorrect password [403]') {
-        confirmResetPassword(username, password, type);
+        alertDialog.alert('密碼錯誤');
       }
       else {
         handleError(error);
       }
     }
   });
-}
-
-function confirmResetPassword(username, password, type) {
-  alertDialog.confirm({
-    message: '密碼錯誤，是否嘗試設定新密碼並重新驗證？',
-    callback: (result) => {
-      if (result) {
-        const reset = true;
-        Meteor.customCall('loginOrRegister', {username, password, type, reset}, (error, result) => {
-          if (! error) {
-            onGotValidateCode(result, type);
-          }
-        });
-      }
-    }
-  });
-}
-
-function onGotValidateCode(code, type) {
-  rCode.set(code);
-  rAccountDialogMode.set('validate' + type);
 }

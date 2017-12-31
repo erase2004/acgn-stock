@@ -4,25 +4,6 @@
       <div class="card-block">
         <h1 class="card-title text-truncate">
           {{this.companyName}}
-          {{#if currentUser}}
-            {{#if currentUser.profile.isAdmin}}
-              <a class="btn btn-warning float-right" href="#" data-action="changeCompanyName">
-                更名
-              </a>
-              <a class="btn btn-warning" href="{{getEditHref this._id}}">
-                修改計劃
-              </a>
-              {{#if this.illegalReason}}
-                <a class="btn btn-danger" href="#" data-action="unmarkFoundationIllegal">
-                  解除違規標記
-                </a>
-              {{else}}
-                <a class="btn btn-danger" href="#" data-action="markFoundationIllegal">
-                  標記違規
-                </a>
-              {{/if}}
-            {{/if}}
-          {{/if}}
         </h1>
         {{#if this.illegalReason}}
           <div class="mb-1 text-danger">

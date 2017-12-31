@@ -20,7 +20,7 @@ function queryStocksPrice(companyId) {
       {
         companyId: companyId,
         createdAt: {
-          $gt: new Date(Date.now() - 86400000)
+          $gt: new Date(new Date(Meteor.settings.public.lastRoundEndTime).getTime() - 86400000)
         }
       },
       {

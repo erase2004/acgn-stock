@@ -7,9 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { dbProducts } from '/db/dbProducts';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { likeProduct } from '../utils/methods';
 import { shouldStopSubscribe } from '../utils/idle';
-import { alertDialog } from '../layout/alertDialog';
 
 inheritedShowLoadingOnSubscribing(Template.productCenterByCompany);
 const rProductSortBy = new ReactiveVar('likeCount');
@@ -94,24 +92,5 @@ Template.productListByCompanyTable.events({
       rProductSortBy.set(sortBy);
       rProductSortDir.set(-1);
     }
-  },
-  'click [data-like-product]'(event) {
-    event.preventDefault();
-    const productId = $(event.currentTarget).attr('data-like-product');
-    likeProduct(productId);
-  },
-  'click [data-take-down]'(event) {
-    event.preventDefault();
-    const productId = $(event.currentTarget).attr('data-take-down');
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '違規處理 - 產品下架',
-      message: `請輸入處理事由：`,
-      callback: function(message) {
-        if (message) {
-          Meteor.customCall('takeDownProduct', { productId, message });
-        }
-      }
-    });
   }
 });

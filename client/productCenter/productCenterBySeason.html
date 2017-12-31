@@ -41,11 +41,6 @@
           得票數
           {{{getSortIcon 'votes'}}}
         </th>
-        {{#if currentUser.profile.isAdmin}}
-          <th class="text-center" style="width: 70px;" title="下架">
-            下架
-          </th>
-        {{/if}}
       </tr>
     </thead>
     <tbody>
@@ -53,11 +48,7 @@
         {{> productInfoBySeasonTable}}
       {{else}}
         <tr>
-          {{#if currentUser.profile.isAdmin}}
-            <td class="text-center" colspan="5">當季度沒有任何產品上架！</td>
-          {{else}}
-            <td class="text-center" colspan="4">當季度沒有任何產品上架！</td>
-          {{/if}}
+          <td class="text-center" colspan="4">當季度沒有任何產品上架！</td>
         </tr>
       {{/each}}
     </tbody>
@@ -84,22 +75,11 @@
         class="btn btn-primary btn-sm"
         type="button"
         data-vote-product="{{this._id}}"
-        disabled={{cannotVote}}
+        disabled="true"
       >
         {{this.votes}}
         <i class="fa fa-money" aria-hidden="true"></i>
       </button>
     </td>
-    {{#if currentUser.profile.isAdmin}}
-      <td class="text-center px-2">
-        <button
-          class="btn btn-danger btn-sm"
-          type="button"
-          data-take-down="{{this._id}}"
-        >
-          下架
-        </button>
-      </td>
-    {{/if}}
   </tr>
 </template>

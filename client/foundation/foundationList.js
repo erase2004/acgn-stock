@@ -5,10 +5,8 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { dbFoundations } from '/db/dbFoundations';
-import { dbVariables } from '/db/dbVariables';
-import { formatDateText, isUserId, currencyFormat } from '../utils/helpers';
+import { formatDateText, isUserId } from '../utils/helpers';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
 import { shouldStopSubscribe } from '../utils/idle';
 import { rCompanyListViewMode } from '../utils/styles';
 
@@ -47,18 +45,6 @@ Template.foundationList.helpers({
       offset: rFoundationOffset,
       useHrefRoute: true
     };
-  }
-});
-Template.foundationList.events({
-  'click [data-action="createFoundation"]'(event) {
-    event.preventDefault();
-    const user = Meteor.user();
-    if (user.profile.money < Meteor.settings.public.founderEarnestMoney) {
-      alertDialog.alert('您的投資已達上限或剩餘金錢不足以進行投資！');
-
-      return false;
-    }
-    FlowRouter.go('createFoundationPlan');
   }
 });
 
@@ -167,51 +153,6 @@ const foundationListEvents = {
     else {
       panel.css('max-height', 0);
     }
-  },
-  'click [data-action="invest"]'(event, templaceInstance) {
-    event.preventDefault();
-    const user = Meteor.user();
-    if (! user) {
-      alertDialog.alert('您尚未登入！');
-
-      return false;
-    }
-    const userId = user._id;
-    const minimumInvest = Math.ceil(Meteor.settings.public.minReleaseStock / Meteor.settings.public.foundationNeedUsers);
-    const foundationData = templaceInstance.data;
-    const alreadyInvest = _.findWhere(foundationData.invest, {userId});
-    const alreadyInvestAmount = alreadyInvest ? alreadyInvest.amount : 0;
-    const maximumInvest = Math.min(Meteor.user().profile.money, Meteor.settings.public.maximumInvest - alreadyInvestAmount);
-    if (minimumInvest > maximumInvest) {
-      alertDialog.alert('您的投資已達上限或剩餘金錢不足以進行投資！');
-
-      return false;
-    }
-
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '投資',
-      message: `
-        要投資多少金額？(${currencyFormat(minimumInvest)}~${currencyFormat(maximumInvest)})
-        <div class="text-danger">
-          投資理財有賺有賠，請先確認您要投資的公司是否符合
-          <a href="${dbVariables.get('fscRuleURL')}" target="_blank">金管會的規定</a>。
-        </div>
-      `,
-      defaultValue: null,
-      callback: function(result) {
-        const amount = parseInt(result, 10);
-        if (! amount) {
-          return false;
-        }
-        if (amount >= minimumInvest && amount <= maximumInvest) {
-          Meteor.customCall('investFoundCompany', templaceInstance.data._id, amount);
-        }
-        else {
-          alertDialog.alert('不正確的金額數字！');
-        }
-      }
-    });
   }
 };
 Template.foundationListCard.helpers(foundationListHelpers);

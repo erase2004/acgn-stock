@@ -14,14 +14,3 @@ UserStatus.events.on('connectionLogin', function(data) {
     });
   }
 });
-
-// 登出、離線時更新最後上線日期
-UserStatus.events.on('connectionLogout', function(data) {
-  if (data.userId) {
-    Meteor.users.update(data.userId, {
-      $set: {
-        'statue.lastLogin.date': data.logoutTime
-      }
-    });
-  }
-});

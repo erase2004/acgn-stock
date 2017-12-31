@@ -18,7 +18,6 @@ export const pageNameHash = {
   instantMessage: '即時訊息',
   companyList: '股市總覽',
   foundationList: '新創計劃',
-  companyArchiveList: '公司保管庫',
   advertising: '廣告宣傳',
   productCenterBySeason: '產品中心',
   productCenterByCompany: '產品中心',
@@ -91,12 +90,6 @@ companyRoute.route('/detail/:companyId', {
     }
   }
 });
-FlowRouter.route('/edit/:companyId', {
-  name: 'editCompany',
-  action() {
-    DocHead.setTitle(Meteor.settings.public.websiteName + ' - 經營管理');
-  }
-});
 
 const foundationRoute = FlowRouter.group({
   prefix: '/foundation',
@@ -135,20 +128,6 @@ foundationRoute.route('/view/:foundationId', {
     }
     else {
       DocHead.setTitle(Meteor.settings.public.websiteName + ' - 新創計劃資訊');
-    }
-  }
-});
-foundationRoute.route('/edit/new', {
-  name: 'createFoundationPlan',
-  action() {
-    DocHead.setTitle(Meteor.settings.public.websiteName + ' - 發起新創計劃');
-  }
-});
-foundationRoute.route('/edit/:foundationId', {
-  name: 'editFoundationPlan',
-  action() {
-    if (Meteor.isClient) {
-      DocHead.setTitle(Meteor.settings.public.websiteName + ' - 編輯新創計劃');
     }
   }
 });
@@ -273,22 +252,10 @@ ruleDiscussRoute.route('/list', {
     DocHead.setTitle(Meteor.settings.public.websiteName + ' - 規則討論');
   }
 });
-ruleDiscussRoute.route('/new', {
-  name: 'createRuleAgenda',
-  action() {
-    DocHead.setTitle(Meteor.settings.public.websiteName + ' - 建立新議程');
-  }
-});
 ruleDiscussRoute.route('/view/:agendaId', {
   name: 'ruleAgendaDetail',
   action() {
     DocHead.setTitle(Meteor.settings.public.websiteName + ' - 議程資訊');
-  }
-});
-ruleDiscussRoute.route('/vote/:agendaId', {
-  name: 'ruleAgendaVote',
-  action() {
-    DocHead.setTitle(Meteor.settings.public.websiteName + ' - 議程投票');
   }
 });
 

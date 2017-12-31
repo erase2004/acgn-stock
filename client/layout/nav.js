@@ -110,20 +110,17 @@ Template.nav.helpers({
       return {};
     }
   },
-  previousSeasonParams() {
-    const seasonList = dbSeason
-      .find({}, {
+  lastSeasonParams() {
+    const seasonData = dbSeason
+      .findOne({}, {
         sort: {
           beginDate: -1
-        },
-        limit: 2
-      })
-      .fetch();
-    const previousSeasonData = seasonList[1] || seasonList[0];
+        }
+      });
 
-    if (previousSeasonData) {
+    if (seasonData) {
       return {
-        seasonId: previousSeasonData._id
+        seasonId: seasonData._id
       };
     }
     else {

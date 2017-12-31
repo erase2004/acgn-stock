@@ -3,13 +3,6 @@
     <div class="card-block">
       <h1 class="card-title mb-1">
         舉報違規與金管會處理紀錄
-        {{#if currentUser}}
-          {{#if currentUser.profile.isAdmin}}
-            <a href="#" class="btn btn-primary" data-action="announcement">金管會通告</a>
-          {{else}}
-            <a href="#" class="btn btn-primary" data-action="contactFsc">聯絡金管會</a>
-          {{/if}}
-        {{/if}}
       </h1>
       <hr />
       <div>

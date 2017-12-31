@@ -45,34 +45,6 @@ Template.instantMessage.helpers({
       ? 'btn btn-sm btn-warning mr-1' : 'btn btn-sm btn-secondary mr-1';
   }
 });
-Template.instantMessage.events({
-  'click [data-action="clearMessage"]'(event) {
-    event.preventDefault();
-    rInstantMessageList.set([]);
-  },
-  'click [data-action="dontInterrupt"]'(event) {
-    event.preventDefault();
-    rDontInterrupt.set(! rDontInterrupt.get());
-  }
-});
-
-Template.instantMessageChatForm.onRendered(function() {
-  this.$message = this.$('[name="message"]');
-});
-Template.instantMessageChatForm.events({
-  submit(event, templateInstance) {
-    event.preventDefault();
-    const message = templateInstance.$message.val();
-    if (message.length > 255) {
-      alertDialog.alert('輸入訊息過長！');
-    }
-    else if (message.length) {
-      Meteor.customCall('instantMessageChat', message, () => {
-        templateInstance.$message.val('');
-      });
-    }
-  }
-});
 
 //不能篩掉、永遠顯示的紀錄類別
 const alwaysDisplayLogTypeList = [

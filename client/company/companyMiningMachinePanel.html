@@ -26,20 +26,8 @@
       <div class="d-flex flex-wrap align-items-center mb-2">
         {{#if currentUserPlacedStoneType}}
           <span>您已經放置<span class="text-info">{{stoneDisplayName currentUserPlacedStoneType}}</span>在本公司的挖礦機。</span>
-          <a class="btn btn-sm btn-warning" href="#" data-action="retriveStone">取回石頭</a>
         {{else}}
           <span>您尚未放置任何石頭在本公司的挖礦機。</span>
-          <form class="form-inline align-items-center" name="placeStoneForm" action="#">
-            <select class="form-control form-control-sm" name="stoneType">
-              <option value="" class="d-none" hidden>選擇石頭類型…</option>
-              {{#each stoneType in currentUserAvailableStoneTypeList}}
-                <option value="{{stoneType}}">{{stoneDisplayName stoneType}}</option>
-              {{else}}
-                <option value="" disabled>您沒有任何可放置的石頭！</option>
-              {{/each}}
-            </select>
-            <button type="submit" class="btn btn-sm btn-primary">放置石頭</button>
-          </form>
         {{/if}}
       </div>
     {{/unless}}
