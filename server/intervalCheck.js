@@ -52,6 +52,7 @@ import { rotateProducts } from './functions/product/rotateProducts';
 import { adjustPreviousSeasonVipScores } from './functions/vip/adjustPreviousSeasonVipScores';
 import { levelDownThresholdUnmetVips } from './functions/vip/levelDownThresholdUnmetVips';
 import { startArenaFight } from './arena';
+import { computeArenaAttackSequences } from './functions/arena/computeArenaAttackSequences';
 import { checkExpiredFoundations } from './functions/foundation/checkExpiredFoundations';
 import { paySalaryAndCheckTax } from './paySalaryAndCheckTax';
 import { generateRankAndTaxesData } from './seasonRankAndTaxes';
@@ -163,11 +164,9 @@ export function doRoundWorks(lastRoundData, lastSeasonData) {
       .forEach(({ _id: companyId }) => {
         returnCompanyStones(companyId);
       });
-    // 若arenaCounter為0，則舉辦最萌亂鬥大賽
-    const arenaCounter = dbVariables.get('arenaCounter');
-    if (arenaCounter === 0) {
-      startArenaFight();
-    }
+    // 無論如何都要舉辦最萌亂鬥大賽
+    startArenaFight();
+    dbVariables.set('arenaCounter', Meteor.settings.public.arenaIntervalSeasonNumber);
     // 進行營利結算與分紅
     summarizeAndDistributeProfits();
     // 發放推薦票回饋金
@@ -597,7 +596,14 @@ function generateNewSeason() {
   const arenaCounter = dbVariables.get('arenaCounter') || 0;
   // 若上一個商業季度為最萌亂鬥大賽的舉辦季度，則產生新的arena Data
   if (arenaCounter <= 0) {
-    const arenaEndDate = new Date(endDate.getTime() + Meteor.settings.public.seasonTime * Meteor.settings.public.arenaIntervalSeasonNumber);
+    const arenaShouldEndTime = endDate.getTime() + Meteor.settings.public.seasonTime * Meteor.settings.public.arenaIntervalSeasonNumber;
+    const lastRoundData = dbRound.findOne({}, {
+      sort: {
+        beginDate: -1
+      }
+    });
+    const lastRoundEndTime = lastRoundData.endDate.getTime();
+    const arenaEndDate = new Date(arenaShouldEndTime > lastRoundEndTime ? lastRoundEndTime : arenaShouldEndTime);
     dbArena.insert({
       beginDate: beginDate,
       endDate: arenaEndDate,
@@ -640,7 +646,8 @@ function electManager(seasonData) {
       beginDate: -1
     },
     fields: {
-      _id: 1
+      _id: 1,
+      endDate: 1
     }
   });
   const arenaId = lastArenaData._id;
@@ -797,46 +804,13 @@ function electManager(seasonData) {
     }
   });
 
+  // TODO 抽離經理人選舉並並使用新的事件排程方式
   // 若本商業季度為最萌亂鬥大賽的舉辦季度，則計算出所有報名者的攻擊次序
-  const arenaCounter = dbVariables.get('arenaCounter') || 0;
-  if (arenaCounter <= 0) {
-    if (lastArenaData) {
-      const fighterCompanyIdList = dbArenaFighters
-        .find({ arenaId }, {
-          fields: {
-            companyId: 1
-          }
-        })
-        .map((arenaFighter) => {
-          return arenaFighter.companyId;
-        });
-      const shuffledFighterCompanyIdList = _.shuffle(fighterCompanyIdList);
-      dbArena.update(arenaId, {
-        $set: {
-          shuffledFighterCompanyIdList
-        }
-      });
-      const attackSequence = _.range(shuffledFighterCompanyIdList.length);
-      dbArenaFighters
-        .find({}, {
-          fields: {
-            _id: 1,
-            companyId: 1
-          }
-        })
-        .forEach((fighter) => {
-          const thisFighterIndex = _.indexOf(shuffledFighterCompanyIdList, fighter.companyId);
-          const thisAttackSequence = _.without(attackSequence, thisFighterIndex);
-          const shuffledAttackSequence = _.shuffle(thisAttackSequence);
-          dbArenaFighters.update(fighter._id, {
-            $set: {
-              attackSequence: shuffledAttackSequence
-            }
-          });
-        });
-    }
+  if (lastArenaData && lastArenaData.endDate.getTime() === seasonData.endDate.getTime()) {
+    computeArenaAttackSequences();
   }
 }
+
 function convertDateToText(date) {
   const dateInTimeZone = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000 * -1);
 
