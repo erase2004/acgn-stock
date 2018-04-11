@@ -8,7 +8,6 @@ import { dbCompanies } from '/db/dbCompanies';
 import { dbDirectors } from '/db/dbDirectors';
 import { dbOrders } from '/db/dbOrders';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { createBuyOrder, createSellOrder, retrieveOrder, changeChairmanTitle, toggleFavorite } from '../utils/methods';
 import { isUserId, isChairman } from '../utils/helpers';
 import { shouldStopSubscribe } from '../utils/idle';
 import { rCompanyListViewMode } from '../utils/styles';
@@ -182,9 +181,6 @@ const companyListHelpers = {
       return 'text-success';
     }
   },
-  getManageHref(companyId) {
-    return FlowRouter.path('editCompany', { companyId });
-  },
   getStockAmount(companyId) {
     const userId = Meteor.user()._id;
     const ownStockData = dbDirectors.findOne({ companyId, userId });
@@ -213,23 +209,6 @@ const companyListHelpers = {
   }
 };
 const companyListEvents = {
-  'click [data-action="changeChairmanTitle"]'(event, templateInstance) {
-    const companyData = templateInstance.data;
-    changeChairmanTitle(companyData);
-  },
-  'click [data-action="createBuyOrder"]'(event, templateInstance) {
-    event.preventDefault();
-    createBuyOrder(Meteor.user(), templateInstance.data);
-  },
-  'click [data-action="createSellOrder"]'(event, templateInstance) {
-    event.preventDefault();
-    createSellOrder(Meteor.user(), templateInstance.data);
-  },
-  'click [data-toggle-favorite]'(event) {
-    event.preventDefault();
-    const companyId = $(event.currentTarget).attr('data-toggle-favorite');
-    toggleFavorite(companyId);
-  },
   'click [data-expand-order]'(event, templateInstance) {
     event.preventDefault();
     const panel = templateInstance.$('.order-panel');
@@ -240,12 +219,6 @@ const companyListEvents = {
     else {
       panel.css('max-height', 0);
     }
-  },
-  'click [data-cancel-order]'(event) {
-    event.preventDefault();
-    const orderId = $(event.currentTarget).attr('data-cancel-order');
-    const orderData = dbOrders.findOne(orderId);
-    retrieveOrder(orderData);
   }
 };
 Template.companyListCard.helpers(companyListHelpers);

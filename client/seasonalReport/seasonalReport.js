@@ -10,7 +10,6 @@ import { dbRankCompanyValue } from '/db/dbRankCompanyValue';
 import { dbRankCompanyCapital } from '/db/dbRankCompanyCapital';
 import { dbRankUserWealth } from '/db/dbRankUserWealth';
 import { dbSeason } from '/db/dbSeason';
-import { dbVariables } from '/db/dbVariables';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { shouldStopSubscribe } from '../utils/idle';
 import { currencyFormat, setChartTheme } from '../utils/helpers.js';
@@ -107,7 +106,7 @@ Template.reportSeasonNav.helpers({
               }
             }
           );
-          if (navSeasonData && navSeasonData._id !== dbVariables.get('currentSeasonId')) {
+          if (navSeasonData) {
             return {
               'class': 'btn btn-info btn-sm float-right',
               'href': FlowRouter.path('seasonalReport', {

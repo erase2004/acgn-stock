@@ -71,9 +71,7 @@
           <a class="nav-link" href="{{getHref 'announcement'}}">{{getLinkText 'announcement'}}</a>
         </li>
         {{#navLinkGroup text='交易大廳'}}
-          {{> navLink page='instantMessage'}}
           {{> navLink page='companyList' params=page1}}
-          {{> navLink page='foundationList' params=page1}}
           {{> navLink page='advertising'}}
           {{> navLink page='productCenterBySeason' params=currentSeasonParams}}
           {{> navLink page='arenaInfo'  params=currentArenaParams}}
@@ -87,12 +85,7 @@
         {{/if}}
         {{#navLinkGroup text='其他資訊'}}
           {{> navLink page='tutorial'}}
-          {{> navLink page='seasonalReport' params=previousSeasonParams}}
-          <li class="nav-item">
-            <a class="nav-link" href="https://museum.acgn-stock.com/" target="_blank">
-              歷史博物館
-            </a>
-          </li>
+          {{> navLink page='seasonalReport' params=lastSeasonParams}}
           {{> navLink page='ruleAgendaList'}}
           {{> navLink page='accuseRecord'}}
           {{> navLink page='fscStock'}}

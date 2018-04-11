@@ -46,10 +46,6 @@ Template.displayLog.onRendered(function() {
         let path;
         // TODO write a helper
         switch (status) {
-          case 'foundation': {
-            path = FlowRouter.path('foundationDetail', { foundationId: companyId });
-            break;
-          }
           case 'market': {
             path = FlowRouter.path('companyDetail', { companyId });
             break;

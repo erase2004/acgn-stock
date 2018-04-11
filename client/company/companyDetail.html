@@ -16,18 +16,6 @@
 
 <template name="companyDetailContentSealed">
   該公司已被金融管理委員會查封！
-  {{#if currentUser.profile.isAdmin}}
-    <a class="btn btn-danger float-right" href="#" data-action="unseal">
-      解除查封
-    </a>
-  {{/if}}
-  {{#if currentUser}}
-    {{#if isFavorite this._id}}
-      <a class="btn btn-primary float-right" href="#" data-action="toggleFavorite" data-toggle-favorite="{{this._id}}">
-        移除最愛
-      </a>
-    {{/if}}
-  {{/if}}
   <div class="row border-grid-body mt-5">
     {{> companyLogList}}
   </div>
@@ -37,29 +25,6 @@
   <h1 class="d-flex flex-wrap justify-content-start">
     <div class="text-truncate" title="{{this.companyName}}">
       {{this.companyName}}
-    </div>
-    <div class="d-flex flex-wrap justify-content-end ml-auto mt-1">
-      {{#if currentUser}}
-        {{#unless currentUser.profile.isAdmin}}
-          <a class="btn btn-danger" href="#" data-action="accuseCompany">
-            舉報違規
-          </a>
-        {{/unless}}
-        <a class="btn btn-primary" href="#" data-toggle-employ="{{this._id}}">
-          {{#if isEmployee}}
-            取消員工報名
-          {{else}}
-            員工報名
-          {{/if}}
-        </a>
-        <a class="btn btn-primary" href="#" data-action="toggleFavorite" data-toggle-favorite="{{this._id}}">
-          {{#if isFavorite this._id}}
-            移除最愛
-          {{else}}
-            加入最愛
-          {{/if}}
-        </a>
-      {{/if}}
     </div>
   </h1>
   {{#if this.illegalReason}}
@@ -92,46 +57,12 @@
   <h2 class="card-subtitle mb-2 text-muted" style="word-break: break-all;">
     {{this.chairmanTitle}}：
     {{>userLink this.chairman}}
-    {{#if isChairman this._id}}
-      <a class="btn btn-primary btn-sm" href="#" data-action="changeChairmanTitle">
-        修改頭銜
-      </a>
-    {{/if}}
   </h2>
   <h3 style="word-break: break-all;">
     經理人：
     {{>userLink this.manager}}
-    {{#if isUserId this.manager}}
-      <a class="btn btn-primary btn-sm" href="{{getManageHref this._id}}">
-        經營管理
-      </a>
-      {{#if canUpdateSalary}}
-        <a class="btn btn-primary btn-sm" href="#" data-action="updateSalary">
-          設定薪資
-        </a>
-      {{else}}
-        <a class="btn btn-primary btn-sm disabled" href="#">
-          設定薪資
-        </a>
-      {{/if}}
-      <a class="btn btn-danger btn-sm" href="#" data-action="resignManager">
-        辭去職務
-      </a>
-    {{else}}
-      {{#if currentUser}}
-        {{#if currentUser.profile.isAdmin}}
-          <a class="btn btn-primary btn-sm" href="{{getManageHref this._id}}">
-            經營管理
-          </a>
-        {{/if}}
-      {{/if}}
-    {{/if}}
   </h3>
   <hr />
-  {{#if currentUser.profile.isAdmin}}
-    {{> companyDetailAdminPanel}}
-    <hr/>
-  {{/if}}
   <div class="row">
     <div class="col-12 col-sm-6">
       <div class="text-success this-season-salary" title="{{this.salary}}">
@@ -149,21 +80,6 @@
   </div>
   <hr />
   {{> companyDetailTable}}
-</template>
-
-<template name="companyDetailAdminPanel">
-  <div class="d-flex flex-wrap">
-    <a class="btn btn-sm btn-info mt-1" href="#" data-action="fscAnnouncement">金管會通告</a>
-    {{#if this.illegalReason}}
-      <a class="btn btn-sm btn-warning mt-1" href="#" data-action="unmarkCompanyIllegal">解除違規標記</a>
-    {{else}}
-      <a class="btn btn-sm btn-warning mt-1" href="#" data-action="markCompanyIllegal">標記違規</a>
-    {{/if}}
-    <a class="btn btn-sm btn-warning mt-1" href="#" data-action="changeCompanyName">更名</a>
-    <a class="btn btn-sm btn-warning mt-1" href="#" data-action="forfeitCompanyProfit">課以罰金</a>
-    <a class="btn btn-sm btn-warning mt-1" href="#" data-action="returnForfeitedCompanyProfit">退還罰金</a>
-    <a class="btn btn-sm btn-danger mt-1" href="#" data-action="seal">查封關停</a>
-  </div>
 </template>
 
 <template name="companyDetailTable">
@@ -389,20 +305,12 @@
   <div class="col-12 col-md-6 border-grid">
     <h4 class="my-1">
       市場買單
-      {{#if currentUser}}
-        <button class="btn btn-info btn-sm" type="button" data-action="createBuyOrder">
-          下單
-        </button>
-      {{/if}}
     </h4>
     {{#each order in myOrderList}}
       <div class="d-flex flex-nowrap">
         <div class="d-inline-block text-truncate" style="max-width: calc(100% - 220px);">{{>userLink order.userId}}</div>
         <div class="text-nowrap">
           以${{currencyFormat order.unitPrice}}{{order.orderType}}{{minus order.amount order.done}}股。
-          <button class="btn btn-danger btn-sm" type="button" data-cancel-order="{{order._id}}">
-            <i class="fa fa-times" aria-hidden="true"></i>
-          </button>
         </div>
       </div>
     {{/each}}
@@ -424,20 +332,12 @@
   <div class="col-12 col-md-6 border-grid">
     <h4 class="my-1">
       市場賣單
-      {{#if getStockAmount this._id}}
-        <button class="btn btn-info btn-sm" type="button" data-action="createSellOrder">
-          下單
-        </button>
-      {{/if}}
     </h4>
     {{#each order in myOrderList}}
       <div class="d-flex flex-nowrap">
         <div class="d-inline-block text-truncate" style="max-width: calc(100% - 220px);">{{>userLink order.userId}}</div>
         <div class="text-nowrap">
           以${{currencyFormat order.unitPrice}}{{order.orderType}}{{minus order.amount order.done}}股。
-          <button class="btn btn-danger btn-sm" type="button" data-cancel-order="{{order._id}}">
-            <i class="fa fa-times" aria-hidden="true"></i>
-          </button>
         </div>
       </div>
     {{/each}}
@@ -495,28 +395,6 @@
     {{#with paginationData}}
       {{> pagination}}
     {{/with}}
-    {{#if getStockAmount this._id}}
-      <form>
-        <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">董事會留言</span>
-            <input
-              class="form-control"
-              type="text"
-              name="message"
-              placeholder="身為董事會成員，你可以留下一則不超過一百個字的留言，同一時間只能存在一則留言。"
-              maxlength="100"
-              value="{{getMyMessage this._id}}"
-            />
-            <span class="input-group-btn">
-              <button class="btn btn-primary" type="submit">
-                送出
-              </button>
-            </span>
-          </div>
-        </div>
-      </form>
-    {{/if}}
   </div>
 </template>
 
@@ -524,15 +402,6 @@
   <div class="col-12 border-grid">
     <h4 class="my-1">
       選舉下個商業季度的負責經理人：
-      {{#if canContendManager}}
-        <button
-          class="btn btn-primary btn-sm"
-          type="button"
-          data-action="contendManager"
-        >
-          我要參選
-        </button>
-      {{/if}}
     </h4>
     <div class="row mb-1">
       <div class="col-5 col-sm-7 col-md-8 text-center">候選人</div>
@@ -544,15 +413,6 @@
         <div class="col-5 col-sm-7 col-md-8">
           <div class="d-flex flex-nowrap justify-content-between">
             <div class="d-inline-block text-truncate">{{>userLink candidate}}</div>
-            {{#if getStockAmount}}
-              <button
-                class="btn btn-primary btn-sm"
-                type="button"
-                data-support-candidate="{{@index}}"
-              >
-                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-              </button>
-            {{/if}}
           </div>
         </div>
         <div class="col-3 col-sm-2 col-md-2 text-center p-0">
@@ -644,26 +504,6 @@
         </div>
       {{/each}}
     </div>
-
-    {{#if isCurrentUserEmployed}}
-      <form>
-        <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">員工留言</span>
-            <input
-              class="form-control"
-              type="text"
-              name="message"
-              placeholder="身為現任員工，你可以留下一則不超過一百個字的留言，同一時間只能存在一則留言。"
-              maxlength="100"
-              value="{{getMyMessage}}"/>
-            <span class="input-group-btn">
-              <button class="btn btn-primary" type="submit">送出</button>
-            </span>
-          </div>
-        </div>
-      </form>
-    {{/if}}
   </div>
   <div class="col-12 border-grid grid-table">
     <h4 class="my-1">
@@ -712,13 +552,6 @@
       {{else}}
         <div style="word-break: break-all;">
           {{companyData.companyName}}並沒有參加這一屆的最萌亂鬥大賽！
-          {{#if isUserId companyData.manager}}
-            {{#if inCanJoinTime}}
-              <button class="btn btn-primary btn-sm" type="button" data-action="joinArena">
-                報名參賽
-              </button>
-            {{/if}}
-          {{/if}}
         </div>
       {{/if}}
       {{#with this.joinData}}
@@ -735,6 +568,7 @@
             href="#"
             title="投資加點"
             data-invest="hp"
+            disabled="true"
           >
             HP
             <i class="fa fa-angle-double-up" aria-hidden="true"></i>
@@ -744,14 +578,6 @@
             {{getAttributeNumber 'hp' this.hp}}
             (已投資${{currencyFormat this.hp}})
           </span>
-          &nbsp;
-          <button
-            class="btn btn-success btn-sm d-none d-sm-inline-block"
-            type="button"
-            data-invest="hp"
-          >
-            投資加點
-          </button>
         </div>
         <div class="mb-1 d-flex flex-wrap justify-content-end col-md-8 col-sm-12 p-0">
           <button
@@ -759,6 +585,7 @@
             href="#"
             title="投資加點"
             data-invest="sp"
+            disabled="true"
           >
             SP
             <i class="fa fa-angle-double-up" aria-hidden="true"></i>
@@ -768,14 +595,6 @@
             {{getAttributeNumber 'sp' this.sp}}
             (已投資${{currencyFormat this.sp}})
           </span>
-          &nbsp;
-          <button
-            class="btn btn-success btn-sm d-none d-sm-inline-block"
-            type="button"
-            data-invest="sp"
-          >
-            投資加點
-          </button>
         </div>
         <div class="mb-1 d-flex flex-wrap justify-content-end col-md-8 col-sm-12 p-0">
           <button
@@ -783,6 +602,7 @@
             href="#"
             title="投資加點"
             data-invest="atk"
+            disabled="true"
           >
             ATK
             <i class="fa fa-angle-double-up" aria-hidden="true"></i>
@@ -792,14 +612,6 @@
             {{getAttributeNumber 'atk' this.atk}}
             (已投資${{currencyFormat this.atk}})
           </span>
-          &nbsp;
-          <button
-            class="btn btn-success btn-sm d-none d-sm-inline-block"
-            type="button"
-            data-invest="atk"
-          >
-            投資加點
-          </button>
         </div>
         <div class="mb-1 d-flex flex-wrap justify-content-end col-md-8 col-sm-12 p-0">
           <button
@@ -807,6 +619,7 @@
             href="#"
             title="投資加點"
             data-invest="def"
+            disabled="true"
           >
             DEF
             <i class="fa fa-angle-double-up" aria-hidden="true"></i>
@@ -816,14 +629,6 @@
             {{getAttributeNumber 'def' this.def}}
             (已投資${{currencyFormat this.def}})
           </span>
-          &nbsp;
-          <button
-            class="btn btn-success btn-sm d-none d-sm-inline-block"
-            type="button"
-            data-invest="def"
-          >
-            投資加點
-          </button>
         </div>
         <div class="mb-1 d-flex flex-wrap justify-content-end col-md-8 col-sm-12 p-0">
           <button
@@ -831,6 +636,7 @@
             href="#"
             title="投資加點"
             data-invest="agi"
+            disabled="true"
           >
             AGI&nbsp;<i class="fa fa-angle-double-up" aria-hidden="true"></i>
           </button>
@@ -839,14 +645,6 @@
             {{getAttributeNumber 'agi' this.agi}}
             (已投資${{currencyFormat this.agi}})
           </span>
-          &nbsp;
-          <button
-            class="btn btn-success btn-sm d-none d-sm-inline-block"
-            type="button"
-            data-invest="agi"
-          >
-            投資加點
-          </button>
         </div>
       {{/with}}
       {{#if isUserId this.joinData.manager}}
@@ -888,6 +686,7 @@
         value="{{getManner 'normal' 0}}"
         maxlength="150"
         placeholder="第一招普通攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -896,6 +695,7 @@
         value="{{getManner 'normal' 1}}"
         maxlength="150"
         placeholder="第二招普通攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -904,6 +704,7 @@
         value="{{getManner 'normal' 2}}"
         maxlength="150"
         placeholder="第三招普通攻擊的招式名稱"
+        readonly
       />
     </div>
     <div class="form-group col-12 col-lg-6">
@@ -915,6 +716,7 @@
         value="{{getManner 'special' 0}}"
         maxlength="150"
         placeholder="第一招特殊攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -923,6 +725,7 @@
         value="{{getManner 'special' 1}}"
         maxlength="150"
         placeholder="第二招特殊攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -931,13 +734,14 @@
         value="{{getManner 'special' 2}}"
         maxlength="150"
         placeholder="第三招特殊攻擊的招式名稱"
+        readonly
       />
     </div>
     {{#if hasEnemy}}
       <div class="form-group col-12 col-lg-6">
         <div class="mb-2">
           排列優先攻擊順序：
-          <button class="btn btn-success btn-sm float-right" type="button" data-action="sortAll">
+          <button class="btn btn-success btn-sm float-right" type="button" data-action="sortAll" disabled="true">
             自動排序
             <i class="fa fa-angle-double-right" aria-hidden="true"></i>
           </button>
@@ -950,13 +754,6 @@
                 style="border: 1px solid #ddd; line-height: 1.75rem;"
               >
                 <div class="text-truncate mr-auto">{{>companyLink this.companyId}}</div>
-                <button
-                  class="btn btn-success btn-sm"
-                  type="button"
-                  data-add="{{this._id}}"
-                >
-                  <i class="fa fa-plus-square"></i>
-                </button>
               </div>
             {{/if}}
           {{/each}}
@@ -975,13 +772,6 @@
               <div class="text-truncate mr-auto">
                 {{>companyLink this.companyId}}
               </div>
-              <button
-                class="btn btn-danger btn-sm"
-                type="button"
-                data-remove="{{this._id}}"
-              >
-                <i class="fa fa-minus-square"></i>
-              </button>
             </div>
           {{/each}}
         </div>
@@ -990,12 +780,6 @@
       <div class="col-12 text-info">報名尚未截止，暫時無法設定攻擊優先順序。</div>
     {{/if}}
     <hr />
-    <div class="col-12 text-right">
-      {{#if hasEnemy}}
-      <button class="btn btn-secondary" type="reset">重設</button>
-      {{/if}}
-      <button class="btn btn-primary" type="submit">送出</button>
-    </div>
   </form>
 </template>
 

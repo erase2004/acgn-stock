@@ -1,23 +1,9 @@
 {
   "public": {
     "debugMode": false,
-    "websiteName": "ACGN股票交易市場",
+    "websiteName": "(β)ACGN股票歷史博物館",
     "intervalTimer": 60000,
-    "releaseStocksForHighPriceMinCounter": 180,
-    "releaseStocksForHighPriceMaxCounter": 360,
-    "releaseStocksForNoDealMinCounter": 1440,
-    "releaseStocksForNoDealMaxCounter": 2880,
-    "recordListPriceMinCounter": 180,
-    "recordListPriceMaxCounter": 360,
-    "checkChairmanCounter": 10,
-    "founderEarnestMoney": 1024,
-    "foundExpireTime": 43200000,
-    "maximumInvest": 4096,
-    "foundationNeedUsers": 20,
-    "minReleaseStock": 1000,
-    "newUserInitialMoney": 10000,
     "newUserBirthStones": 1,
-    "salaryPerPay": 1000,
     "seasonNumberInRound": 13,
     "arenaIntervalSeasonNumber": 1,
     "arenaMaximumRound": 1000,
@@ -26,18 +12,8 @@
     "electManagerTime": 86400000,
     "displayAdvertisingNumber": 5,
     "advertisingExpireTime": 259200000,
-    "maximumFavorite": 60,
-    "maximumRuleIssue": 10,
-    "maximumRuleIssueOption": 10,
-    "voteUserNeedCreatedIn": 604800000,
-    "maximumCompanySalaryPerDay": 2000,
-    "minimumCompanySalaryPerDay": 500,
     "defaultCompanySalaryPerDay": 1000,
     "announceSalaryTime": 259200000,
-    "vacationModeZombieTaxPerDay": 500,
-    "minIntervalTimeBetweenVacations": 604800000,
-    "taxExpireTime": 259200000,
-    "releaseStocksForNoDealTradeLogLookbackIntervalTime": 86400000,
     "miningMachineOperationTime": 86400000,
     "miningMachineSaintStoneLimit": 7,
     "stonePrice": {
@@ -53,7 +29,6 @@
     },
     "productFinalSaleTime": 86400000,
     "systemProductVotingReward": 4096,
-    "employeeProductVotingRewardFactor": 0.01,
     "productVoucherAmount": 7000,
     "productRebates": {
       "divisorAmount": 3500,
@@ -85,7 +60,6 @@
         "stockBonusFactor": 2.00
       }
     },
-    "vipLevelCheckInterval": 1800000,
     "vipLevelDownChance": 0.05,
     "vipPreviousSeasonScoreWeight": 0.80,
     "companyProfitDistribution": {
@@ -108,6 +82,6 @@
         "default": 3
       }
     },
-    "newRoundFoundationRestrictionTime": 3600000
+    "lastRoundEndTime": "2018-04-08T02:00:01.000Z"
   }
 }

@@ -68,12 +68,6 @@ Template.companyLink.onRendered(function() {
         const companyName = companyData.name;
         let path;
         switch (companyData.status) {
-          case 'foundation': {
-            path = FlowRouter.path('foundationDetail', {
-              foundationId: companyId
-            });
-            break;
-          }
           case 'market': {
             path = FlowRouter.path('companyDetail', { companyId });
             break;

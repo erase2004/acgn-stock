@@ -21,7 +21,7 @@ function queryTodayDealAmount(companyId) {
         logType: '交易紀錄',
         companyId: companyId,
         createdAt: {
-          $gte: new Date(Date.now() - 86400000)
+          $gte: new Date(new Date(Meteor.settings.public.lastRoundEndTime).getTime() - 86400000)
         }
       },
       {

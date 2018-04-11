@@ -110,13 +110,7 @@
           <div class="d-flex flex-row-reverse">
             <div class="member-panel">
               <div class="d-flex flex-row-reverse">
-                {{#if isChairman this._id}}
-                  <a class="small" href="#" data-action="changeChairmanTitle">
-                    {{this.chairmanTitle}}
-                  </a>
-                {{else}}
-                  <small>{{this.chairmanTitle}}</small>
-                {{/if}}
+                <small>{{this.chairmanTitle}}</small>
               </div>
               <div class="d-flex flex-row-reverse">
                 <h4>{{>userLink this.chairman}}</h4>
@@ -169,36 +163,11 @@
               {{#each ownOrderList this._id}}
                 <div class="mb-1">
                   {{orderType}}{{done}}/{{amount}} (${{unitPrice}})
-                  <button class="btn btn-danger btn-sm" type="button" data-cancel-order="{{_id}}">
-                    取消
-                  </button>
                 </div>
               {{/each}}
             </div>
           </div>
         {{/if}}
-        <hr style="margin: 0px;" />
-        <div class="row btn-group">
-          {{#if isUserId this.manager}}
-            <a class="btn btn-tab" href="{{getManageHref this._id}}">
-              經營管理
-            </a>
-          {{else}}
-            {{#if currentUser.profile.isAdmin}}
-              <a class="btn btn-tab" href="{{getManageHref this._id}}">
-                經營管理
-              </a>
-            {{/if}}
-          {{/if}}
-          <button class="btn btn-tab" type="button" data-action="createBuyOrder">
-            購入
-          </button>
-          {{#if getStockAmount this._id}}
-            <button class="btn btn-tab" type="button" data-action="createSellOrder">
-              賣出
-            </button>
-          {{/if}}
-        </div>
       {{/if}}
     </div>
   </div>
@@ -229,13 +198,7 @@
         {{formatDateText this.createdAt}}
       </div>
       <div class="col-4 col-lg-3 text-truncate text-right border-grid row-title" title="{{this.chairmanTitle}}">
-        {{#if isChairman this._id}}
-          <a class="text-truncate" href="#" data-action="changeChairmanTitle">
-            {{this.chairmanTitle}}
-          </a>
-        {{else}}
-          {{this.chairmanTitle}}
-        {{/if}}
+        {{this.chairmanTitle}}
       </div>
       <div class="col-8 col-lg-3 text-truncate border-grid">
         {{>userLink this.chairman}}
@@ -272,54 +235,20 @@
       </div>
       {{#if currentUser}}
         <div class="col-12 border-grid">
-          {{#if isUserId this.manager}}
-            <div class="mb-1">
-              您是該公司的經理人。
-              <a class="btn btn-primary btn-sm" href="{{getManageHref this._id}}">
-                經營管理
-              </a>
-            </div>
-          {{else}}
-            {{#if currentUser.profile.isAdmin}}
-              <div class="mb-1">
-                <a class="btn btn-primary btn-sm" href="{{getManageHref this._id}}">
-                  經營管理
-                </a>
-              </div>
-            {{/if}}
-          {{/if}}
-
           <div class="mb-1">
             {{#if isFavorite this._id}}
               您已將此公司加入最愛。
-              <a class="btn btn-primary btn-sm" href="#" data-action="toggleFavorite" data-toggle-favorite="{{this._id}}">
-                移除最愛
-              </a>
             {{else}}
               您未將此公司加入最愛。
-              <a class="btn btn-primary btn-sm" href="#" data-action="toggleFavorite" data-toggle-favorite="{{this._id}}">
-                加入最愛
-              </a>
             {{/if}}
           </div>
 
           <div class="mb-1">
             您在該公司持有{{getStockAmount this._id}}數量的股份，股權比例為{{getStockPercentage this._id this.totalRelease}}%。
-            <button class="btn btn-info btn-sm" type="button" data-action="createBuyOrder">
-              購入
-            </button>
-            {{#if getStockAmount this._id}}
-              <button class="btn btn-info btn-sm" type="button" data-action="createSellOrder">
-                賣出
-              </button>
-            {{/if}}
           </div>
           {{#each ownOrderList this._id}}
             <div class="mb-1">
               您有一筆以單價${{unitPrice}}{{orderType}}數量{{amount}}股份的訂單尚未交易完成，目前已處理了{{done}}數量。
-              <button class="btn btn-danger btn-sm" type="button" data-cancel-order="{{_id}}">
-                取消訂單
-              </button>
             </div>
           {{/each}}
         </div>

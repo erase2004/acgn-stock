@@ -16,9 +16,6 @@ Template.ruleAgendaList.onCreated(function() {
   });
 });
 Template.ruleAgendaList.helpers({
-  getNewAgendaHref() {
-    return FlowRouter.path('createRuleAgenda');
-  },
   getAgendaHref(agendaId) {
     return FlowRouter.path('ruleAgendaDetail', { agendaId });
   },
