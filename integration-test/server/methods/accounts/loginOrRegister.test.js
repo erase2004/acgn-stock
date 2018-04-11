@@ -45,7 +45,7 @@ describe('method loginOrRegister', function() {
   });
 
   describe('when the user does not exist', function() {
-    it('should return true', function() {
+    it('should return false', function() {
       return loginOrRegister({
         username: userData.username,
         password: userData.password,
