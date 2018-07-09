@@ -3,6 +3,7 @@ import { check, Match } from 'meteor/check';
 import { _ } from 'meteor/underscore';
 
 import { dbProducts } from '/db/dbProducts';
+import { dbViolationCases } from '/db/dbViolationCases';
 import { dbLog } from '/db/dbLog';
 import { debug } from '/server/imports/utils/debug';
 import { guardUser } from '/common/imports/guards';
@@ -10,7 +11,7 @@ import { guardUser } from '/common/imports/guards';
 const editableFields = ['productName', 'type', 'url', 'description'];
 
 Meteor.methods({
-  adminEditProduct({ productId, newData }) {
+  adminEditProduct({ productId, newData, violationCaseId }) {
     check(this.userId, String);
     check(productId, String);
     check(newData, {
@@ -19,17 +20,18 @@ Meteor.methods({
       url: String,
       description: new Match.Maybe(String)
     });
-    adminEditProduct({ userId: this.userId, productId, newData });
+    check(violationCaseId, Match.Optional(String));
+
+    adminEditProduct(Meteor.user(), { productId, newData, violationCaseId });
 
     return true;
   }
 });
 
-export function adminEditProduct({ userId, productId, newData }) {
-  debug.log('adminEditProduct', { userId, productId, newData });
+export function adminEditProduct(currentUser, { productId, newData, violationCaseId }) {
+  debug.log('adminEditProduct', { currentUser, productId, newData, violationCaseId });
 
-  const user = Meteor.users.findByIdOrThrow(userId);
-  guardUser(user).checkIsAdmin();
+  guardUser(currentUser).checkHasRole('fscMember');
 
   const { url } = newData;
 
@@ -41,15 +43,26 @@ export function adminEditProduct({ userId, productId, newData }) {
     throw new Meteor.Error(403, '相同的產品已經被推出過了！');
   }
 
+  if (violationCaseId) {
+    dbViolationCases.findByIdOrThrow(violationCaseId, { fields: { _id: 1 } });
+  }
+
+  const diff = productDiff(oldData, newData);
+
+  if (_.isEmpty(diff)) {
+    throw new Meteor.Error(403, '產品資料並沒有任何改變！');
+  }
+
   dbProducts.update({ _id: productId }, { $set: newData });
 
   dbLog.insert({
     logType: '產品修正',
-    userId: [userId],
+    userId: [currentUser._id],
     companyId,
     data: {
       productId,
-      diff: productDiff(oldData, newData)
+      diff,
+      violationCaseId
     },
     createdAt: new Date()
   });

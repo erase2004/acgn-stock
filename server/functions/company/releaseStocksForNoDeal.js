@@ -1,73 +1,42 @@
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
 
 import { createOrder } from '/server/imports/createOrder';
 import { resourceManager } from '/server/imports/threading/resourceManager';
-import { countdownManager } from '/server/imports/utils/countdownManager';
 import { dbCompanies } from '/db/dbCompanies';
 import { dbVariables } from '/db/dbVariables';
-import { debug } from '/server/imports/utils/debug';
 import { calculateHighPriceBuyAmount, calculateDealAmount, getPriceLimits } from './helpers';
 
-const counterBase = 1000 * 60;
-
-function generateReleaseStocksForNoDealCounter() {
-  return _.random(
-    Meteor.settings.public.releaseStocksForNoDealMinCounter,
-    Meteor.settings.public.releaseStocksForNoDealMaxCounter
-  );
-}
-
-function updateReleaseStocksForNoDealPeriod() {
+export function updateReleaseStocksForNoDealPeriod() {
+  const { min: intervalMin, max: intervalMax } = Meteor.settings.public.releaseStocksForNoDealInterval;
   const now = Date.now();
-  const begin = now + Meteor.settings.public.releaseStocksForNoDealMinCounter * counterBase;
-  const end = now + Meteor.settings.public.releaseStocksForNoDealMaxCounter * counterBase;
 
-  dbVariables.set('releaseStocksForNoDealBegin', begin);
-  dbVariables.set('releaseStocksForNoDealEnd', end);
-}
-
-// 倒數低量釋股
-export function countDownReleaseStocksForNoDeal() {
-  debug.log('countDownReleaseStocksForNoDeal');
-
-  const counterKey = 'releaseStocksForNoDealCounter';
-
-  if (! countdownManager.isInitialized(counterKey)) {
-    countdownManager.set(counterKey, generateReleaseStocksForNoDealCounter());
-  }
-
-  countdownManager.countDown(counterKey);
-
-  if (! countdownManager.isZeroReached(counterKey)) {
-    return;
-  }
-
-  const nextCounter = generateReleaseStocksForNoDealCounter();
-  countdownManager.set(counterKey, nextCounter);
-  console.info('releaseStocksForNoDeal triggered! next counter: ', nextCounter);
-
-  // 更新下次可能觸發時間區間
-  updateReleaseStocksForNoDealPeriod();
-
-  releaseStocksForNoDeal();
+  dbVariables.set('releaseStocksForNoDealBegin', now + intervalMin);
+  dbVariables.set('releaseStocksForNoDealEnd', now + intervalMax);
 }
 
 // 對全市場進行低量釋股
 export function releaseStocksForNoDeal() {
   dbCompanies
     .find({ isSeal: false }, {
-      fields: { _id: 1 },
+      fields: { _id: 1, createdAt: 1, totalRelease: 1 },
       disableOplog: true
     })
-    .forEach(({ _id: companyId }) => {
+    .forEach(({ _id: companyId, createdAt, totalRelease }) => {
       // 先鎖定資源，再重新讀取一次資料進行運算
       resourceManager.request('releaseStocksForNoDeal', [`companyOrder${companyId}`], (release) => {
+        const { releaseStocksForNoDealTradeLogLookbackIntervalTime: lookbackTime } = Meteor.settings.public;
+
         const companyData = dbCompanies.findOne(companyId, { fields: { _id: 1, listPrice: 1 } });
-        const dealAmount = calculateDealAmount(companyData, Meteor.settings.public.releaseStocksForNoDealTradeLogLookbackIntervalTime);
+        const dealAmount = calculateDealAmount(companyData, lookbackTime);
         const highPriceBuyAmount = calculateHighPriceBuyAmount(companyData);
 
-        if (highPriceBuyAmount <= dealAmount * 10) {
+        // 判斷是否為最近上市的公司
+        const isNewCompany = Date.now() - lookbackTime < createdAt.getTime();
+
+        // 低量實際門檻
+        const threshold = 10 * (dealAmount + (isNewCompany ? totalRelease : 0));
+
+        if (highPriceBuyAmount <= threshold) {
           release();
 
           return;

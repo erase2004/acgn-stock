@@ -1,35 +1,52 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 
 import { dbLog } from '/db/dbLog';
+import { dbCompanyArchive } from '/db/dbCompanyArchive';
+import { dbFoundations } from '/db/dbFoundations';
 import { dbCompanies } from '/db/dbCompanies';
+import { dbViolationCases } from '/db/dbViolationCases';
 import { limitMethod } from '/server/imports/utils/rateLimit';
 import { debug } from '/server/imports/utils/debug';
+import { guardUser } from '/common/imports/guards';
 
 Meteor.methods({
-  unmarkCompanyIllegal(companyId) {
+  unmarkCompanyIllegal({ companyId, violationCaseId }) {
     check(this.userId, String);
     check(companyId, String);
-    unmarkCompanyIllegal(Meteor.user(), companyId);
+    check(violationCaseId, Match.Optional(String));
+
+    unmarkCompanyIllegal(Meteor.user(), { companyId, violationCaseId });
 
     return true;
   }
 });
-function unmarkCompanyIllegal(user, companyId) {
-  debug.log('unmarkCompanyIllegal', { user, companyId });
-  if (! user.profile.isAdmin) {
-    throw new Meteor.Error(403, '您並非金融管理會委員，無法進行此操作！');
+function unmarkCompanyIllegal(currentUser, { companyId, violationCaseId }) {
+  debug.log('unmarkCompanyIllegal', { user: currentUser, companyId, violationCaseId });
+
+  guardUser(currentUser).checkHasRole('fscMember');
+
+  if (violationCaseId) {
+    dbViolationCases.findByIdOrThrow(violationCaseId, { fields: { _id: 1 } });
   }
 
-  if (dbCompanies.find(companyId).count() === 0) {
-    throw new Meteor.Error(404, `找不到識別碼為「${companyId}」的公司！`);
+  const { status } = dbCompanyArchive.findByIdOrThrow(companyId, { fields: { status: 1 } });
+
+  switch (status) {
+    case 'foundation':
+      dbFoundations.update(companyId, { $unset: { illegalReason: 1 } });
+      break;
+    case 'market':
+      dbCompanies.update(companyId, { $unset: { illegalReason: 1 } });
+      break;
   }
 
   dbCompanies.update(companyId, { $unset: { illegalReason: 1 } });
   dbLog.insert({
     logType: '違規解標',
-    userId: [user._id],
+    userId: [currentUser._id],
     companyId,
+    data: { violationCaseId },
     createdAt: new Date()
   });
 }

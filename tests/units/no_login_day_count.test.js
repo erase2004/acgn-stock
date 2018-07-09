@@ -1,4 +1,3 @@
-'use strict';
 import test from 'tape';
 import deepequal from 'deep-equal';
 import { Meteor } from 'meteor/meteor';
@@ -15,9 +14,6 @@ test('No login day computaion test', function(t) {
     if (id !== 'FOOBAR')
       t.fail('Try to update with incorrect id');
     if (! deepequal(info, {
-      $set: {
-        'status.lastLogin.date': new Date(2017, 1, 4, 10, 0)
-      },
       $inc: {
         'profile.noLoginDayCount': 1
       }

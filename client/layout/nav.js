@@ -1,4 +1,3 @@
-'use strict';
 import { $ } from 'meteor/jquery';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -8,6 +7,10 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { dbArena } from '/db/dbArena';
 import { dbSeason } from '/db/dbSeason';
 import { stoneTypeList } from '/db/dbCompanyStones';
+import {
+  getAccessibleControlCenterPageKeys,
+  pathForControlCenterPage
+} from '/client/controlCenter/helpers';
 import { pageNameHash } from '/routes';
 import { rMainTheme } from '../utils/styles';
 import { shouldStopSubscribe } from '../utils/idle';
@@ -152,7 +155,12 @@ Template.nav.helpers({
   },
   userStoneCount(user, stoneType) {
     return user.profile.stones[stoneType];
-  }
+  },
+  shouldShowControlCenter() {
+    return getAccessibleControlCenterPageKeys().length > 0;
+  },
+  getAccessibleControlCenterPageKeys,
+  pathForControlCenterPage
 });
 Template.nav.events({
   'click [data-login]'(event) {

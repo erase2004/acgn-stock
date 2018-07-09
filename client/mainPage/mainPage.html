@@ -1,0 +1,117 @@
+<template name="mainPage">
+  <div class="card">
+    <div class="card-block">
+      <h1>{{websiteName}}</h1>
+      <hr />
+      {{> legacyAnnouncement}}
+      <hr />
+      {{> systemStatusPanel}}
+      <hr />
+      <div class="row">
+        <div class="col-12">
+          提醒：進行任何投資行為前請三思，投資新創應注意角色是否合法，買賣股票應留意董事會動向，季度更替時應確實繳稅，詳細說明請參閱<a href="{{getTutorialHref}}">教學導覽</a>。ACGN股票交易市場感謝各位玩家的參與，祝您投資愉快！
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="legacyAnnouncement">
+  {{#if currentUserHasAnyRoles 'developer' 'planner' 'fscMember'}}
+    <button class="btn btn-warning btn-sm" type="button" data-action="legacyEditAnnouncement">
+      <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+      修改系統通知
+    </button>
+  {{/if}}
+  {{#if inEditAnnouncementMode}}
+    <hr />
+    {{> legacyAnnouncementForm}}
+  {{/if}}
+  <hr />
+  <div class="row">
+    <div class="col-12">
+      {{{announcementDetail}}}
+    </div>
+  </div>
+</template>
+
+<template name="legacyAnnouncementForm">
+  <form>
+    <h3 class="card-subtitle text-muted">
+      修改系統通知
+    </h3>
+    <hr />
+    <div class="form-group">
+      下方快訊內容
+      <textarea class="form-control" id="announcement-short" rows="4">{{getVariable 'announcement'}}</textarea>
+    </div>
+    <div class="form-group">
+      主頁詳細公告內容
+      <textarea class="form-control" id="announcement-detail" rows="8">{{getVariable 'announcementDetail'}}</textarea>
+    </div>
+    <div class="text-right">
+      <button class="btn btn-primary" type="submit">儲存</button>
+      <button class="btn btn-secondary" type="reset">取消</button>
+    </div>
+  </form>
+</template>
+
+<template name="systemStatusPanel">
+  <div id="system-time-info" class="row">
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">當前賽季起訖時間：</span>
+      <span class="{{taskIsAboutToEnd roundEndTime 168}}">
+        <span class="text-nowrap">{{roundStartTime}}</span>
+        <span class="text-nowrap">~ {{roundEndTime}}</span>
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">商業季度起訖時間：</span>
+      <span class="{{taskIsAboutToEnd seasonEndTime 24}}">
+        <span class="text-nowrap">{{seasonStartTime}}</span>
+        <span class="text-nowrap">~ {{seasonEndTime}}</span>
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">員工薪資修改期限：</span>
+      <span class="text-nowrap {{taskIsAboutToEnd updateSalaryDeadline 24}}">
+        {{updateSalaryDeadline}} {{taskLeftInfo updateSalaryDeadline 24}}
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">營利分配修改期限：</span>
+      <span class="text-nowrap {{taskIsAboutToEnd updateProfitDistributionDeadline 24}}">
+        {{updateProfitDistributionDeadline}} {{taskLeftInfo updateProfitDistributionDeadline 24}}
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">最近股價更新區間：</span>
+      <span class="{{taskIsReady stockPriceUpdateBegin stockPriceUpdateEnd}}">
+        <span class="text-nowrap">{{stockPriceUpdateBegin}}</span>
+        <span class="text-nowrap">~ {{stockPriceUpdateEnd}}</span>
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">最近低量釋股區間：</span>
+      <span class="{{taskIsReady noDealReleaseBegin noDealReleaseEnd}}">
+        <span class="text-nowrap">{{noDealReleaseBegin}}</span>
+        <span class="text-nowrap">~ {{noDealReleaseEnd}}</span>
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">最近高價釋股區間：</span>
+      <span class="{{taskIsReady highPriceReleaseBegin highPriceReleaseEnd}}">
+        <span class="text-nowrap">{{highPriceReleaseBegin}}</span>
+        <span class="text-nowrap">~ {{highPriceReleaseEnd}}</span>
+      </span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span class="font-weight-bold text-nowrap">高價公司價格下限：</span>
+      <span>$ {{highPriceThreshold}}</span>
+    </div>
+    <div class="col-12 offset-md-6 col-md-6">
+      <span class="font-weight-bold text-nowrap">低價公司價格上限：</span>
+      <span>$ {{lowPriceThreshold}}</span>
+    </div>
+  </div>
+</template>

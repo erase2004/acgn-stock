@@ -1,16 +1,25 @@
-'use strict';
 // 真正的設定檔請寫在config.json，這邊只是註解用。
 export const config = {
   debugMode: false, // 是否為debug mode(紀錄一分鐘內的所有方法與訂閱動作，以備crash查看)
   websiteName: 'ACGN股票交易市場', // 網站名稱
   intervalTimer: 60000, // 每隔多少毫秒進行一次工作檢查
-  releaseStocksForHighPriceMinCounter: 180, // 公司檢查是否要因高股價而釋出股票的最小隨機工作檢查次數
-  releaseStocksForHighPriceMaxCounter: 360, // 公司檢查是否要因高股價而釋出股票的最大隨機工作檢查次數
-  releaseStocksForNoDealMinCounter: 1440, // 公司檢查是否要因無成交而釋出股票的最小隨機工作檢查次數
-  releaseStocksForNoDealMaxCounter: 2880, // 公司檢查是否要因無成交而釋出股票的最大隨機工作檢查次數
-  recordListPriceMinCounter: 180, // 為所有公司紀錄參考價格的最小隨機工作檢查次數
-  recordListPriceMaxCounter: 360, // 為所有公司紀錄參考價格的最大隨機工作檢查次數
-  checkChairmanCounter: 10, // 每隔多少次工作檢查，就重新檢查、設定一次各公司的董事長
+  releaseStocksForHighPriceInterval: { // 高價釋股的排程時間範圍 (ms)
+    min: 10800000,
+    max: 21600000
+  },
+  releaseStocksForNoDealInterval: { // 低成交量釋股的排程時間範圍 (ms)
+    min: 86400000,
+    max: 172800000
+  },
+  recordListPriceInterval: { // 參考價更新的排程時間範圍 (ms)
+    min: 10800000,
+    max: 21600000
+  },
+  zeroVolumePriceDrop: { // 無量跌停設定
+    orderAgeThreshold: 21600000, // 賣單需要存在的時間 (ms)
+    tradeVolumeLookbackTime: 86400000 // 交易量的統計時間 (ms)
+  },
+  checkChairmanInterval: 600000, // 董事長檢查的排程時間 (ms)
   founderEarnestMoney: 1024, // 創立公司者需付出的保證金
   foundExpireTime: 43200000, // 創立公司的投資時間期限，單位為毫秒
   maximumInvest: 4096, // 每個人對單一新創計劃的最大投資上限
@@ -23,8 +32,11 @@ export const config = {
   arenaIntervalSeasonNumber: 1, // 最萌亂鬥大賽的舉行會間隔多少個商業季度，0為每個商業季度都會舉辦一次
   arenaMaximumRound: 1000, // 最萌亂鬥大賽的最大回合數
   arenaMinInvestedAmount: 10000, // 最萌亂鬥大賽的參賽所需最小總投資金額
+  arenaJoinEndTime: 86400000, // 最萌亂鬥大賽的報名截止時間，距離舉辦大賽的商業季度的結束時間 (ms)
   seasonTime: 604800000, // 每個商業季度的持續時間，單位為毫秒
-  electManagerTime: 86400000, // 每個商業季度結束前多久時間會進行經理競選，單位為毫秒
+  electManagerTime: 86400000, // 每個商業季度**結束前多久時間**會進行經理競選 (ms)
+  electManagerLastLoginTimeThreshold: 259200000, // 經理選舉時候選人或投票人判定為活躍玩家時，距離上次登入時間之上限 (ms)
+  contendManagerEndTime: 475200000, // 經理選舉的報名結束時間 (ms)
   displayAdvertisingNumber: 5, // 同時最多顯示的廣告筆數
   advertisingExpireTime: 259200000, // 廣告持續時間，單位為毫秒
   maximumFavorite: 60, // 每個人的最愛公司數量上限
@@ -51,7 +63,16 @@ export const config = {
     companyStones: 10,
     userOwnedProducts: 10,
     companyMarketingProducts: 10,
-    companyVips: 10
+    companyVips: 10,
+    announcements: 20,
+    accountInfoLogs: 30,
+    violationCases: 10,
+    violationCaseAssociatedLogs: 30,
+    userViolationCases: 10,
+    userReportedViolationCases: 10,
+    compoanyViolationCases: 10,
+    fscLogs: 30,
+    companyOrders: 10
   },
   productFinalSaleTime: 86400000, // 產品最後出清時間 (ms)
   systemProductVotingReward: 4096, // 系統派發的推薦票回饋金
@@ -109,6 +130,31 @@ export const config = {
       default: 3
     }
   },
-  newRoundFoundationRestrictionTime: 3600000 // 新賽季禁止新創的時間 (ms)
+  newRoundFoundationRestrictionTime: 3600000, // 新賽季禁止新創的時間 (ms)
+  announcement: { // 系統公告相關設定
+    plannedRuleChanges: { // 規則更動計劃
+      rejectionPetition: { // 否決連署設定
+        durationDays: { // 持續時間 (天)
+          min: 3,
+          max: 7
+        },
+        thresholdPercent: 10 // 連署門檻 (%)
+      },
+      rejectionPoll: { // 否決投票設定
+        durationDays: 3, // 持續時間 (天)
+        thresholdPercent: 15 // 投票率門檻 (%)
+      }
+    },
+    appliedRuleChanges: { // 規則更動套用
+      rejectionPetition: { // 否決連署設定
+        durationDays: 14, // 持續時間 (天)
+        thresholdPercent: 20 // 連署門檻 (%)
+      },
+      rejectionPoll: { // 否決投票設定
+        durationDays: 3, // 持續時間 (天)
+        thresholdPercent: 30 // 投票率門檻 (%)
+      }
+    }
+  }
 };
 export default config;

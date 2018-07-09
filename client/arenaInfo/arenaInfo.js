@@ -1,4 +1,3 @@
-'use strict';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { Meteor } from 'meteor/meteor';
@@ -69,15 +68,15 @@ Template.arenaInfo.events({
 Template.arenaInfoNav.helpers({
   arenaLinkAttrs(linkType) {
     const arenaId = FlowRouter.getParam('arenaId');
-    const currentArenaData = dbArena.findOne(arenaId);
+    const currentArena = dbArena.findOne(arenaId);
 
-    if (currentArenaData) {
+    if (currentArena) {
       switch (linkType) {
         case 'prev': {
           const navArenaData = dbArena.findOne(
             {
               beginDate: {
-                $lt: currentArenaData.beginDate
+                $lt: currentArena.beginDate
               }
             },
             {
@@ -105,7 +104,7 @@ Template.arenaInfoNav.helpers({
           const navArenaData = dbArena.findOne(
             {
               beginDate: {
-                $gt: currentArenaData.beginDate
+                $gt: currentArena.beginDate
               }
             },
             {
@@ -134,15 +133,15 @@ Template.arenaInfoNav.helpers({
   },
   arenaBegin() {
     const arenaId = FlowRouter.getParam('arenaId');
-    const currentArenaData = dbArena.findOne(arenaId);
+    const currentArena = dbArena.findOne(arenaId);
 
-    return currentArenaData ? currentArenaData.beginDate : null;
+    return currentArena ? currentArena.beginDate : null;
   },
   arenaEnd() {
     const arenaId = FlowRouter.getParam('arenaId');
-    const currentArenaData = dbArena.findOne(arenaId);
+    const currentArena = dbArena.findOne(arenaId);
 
-    return currentArenaData ? currentArenaData.endDate : null;
+    return currentArena ? currentArena.endDate : null;
   }
 });
 

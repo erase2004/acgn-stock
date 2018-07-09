@@ -3,13 +3,23 @@
     "debugMode": false,
     "websiteName": "ACGN股票交易市場",
     "intervalTimer": 60000,
-    "releaseStocksForHighPriceMinCounter": 180,
-    "releaseStocksForHighPriceMaxCounter": 360,
-    "releaseStocksForNoDealMinCounter": 1440,
-    "releaseStocksForNoDealMaxCounter": 2880,
-    "recordListPriceMinCounter": 180,
-    "recordListPriceMaxCounter": 360,
-    "checkChairmanCounter": 10,
+    "releaseStocksForHighPriceInterval": {
+      "min": 10800000,
+      "max": 21600000
+    },
+    "releaseStocksForNoDealInterval": {
+      "min": 86400000,
+      "max": 172800000
+    },
+    "recordListPriceInterval": {
+      "min": 10800000,
+      "max": 21600000
+    },
+    "zeroVolumePriceDrop": {
+      "orderAgeThreshold": 21600000,
+      "tradeVolumeLookbackTime": 86400000
+    },
+    "checkChairmanInterval": 600000,
     "founderEarnestMoney": 1024,
     "foundExpireTime": 43200000,
     "maximumInvest": 4096,
@@ -22,8 +32,11 @@
     "arenaIntervalSeasonNumber": 1,
     "arenaMaximumRound": 1000,
     "arenaMinInvestedAmount": 10000,
+    "arenaJoinEndTime": 86400000,
     "seasonTime": 604800000,
     "electManagerTime": 86400000,
+    "electManagerLastLoginTimeThreshold": 259200000,
+    "contendManagerEndTime": 475200000,
     "displayAdvertisingNumber": 5,
     "advertisingExpireTime": 259200000,
     "maximumFavorite": 60,
@@ -49,7 +62,16 @@
       "companyStones": 10,
       "userOwnedProducts": 10,
       "companyMarketingProducts": 10,
-      "companyVips": 10
+      "companyVips": 10,
+      "announcements": 20,
+      "accountInfoLogs": 30,
+      "violationCases": 10,
+      "violationCaseAssociatedLogs": 30,
+      "userViolationCases": 10,
+      "userReportedViolationCases": 10,
+      "companyViolationCases": 10,
+      "fscLogs": 30,
+      "companyOrders": 10
     },
     "productFinalSaleTime": 86400000,
     "systemProductVotingReward": 4096,
@@ -108,6 +130,31 @@
         "default": 3
       }
     },
-    "newRoundFoundationRestrictionTime": 3600000
+    "newRoundFoundationRestrictionTime": 3600000,
+    "announcement": {
+      "plannedRuleChanges": {
+        "rejectionPetition": {
+          "durationDays": {
+            "min": 3,
+            "max": 7
+          },
+          "thresholdPercent": 10
+        },
+        "rejectionPoll": {
+          "durationDays": 3,
+          "thresholdPercent": 15
+        }
+      },
+      "appliedRuleChanges": {
+        "rejectionPetition": {
+          "durationDays": 14,
+          "thresholdPercent": 20
+        },
+        "rejectionPoll": {
+          "durationDays": 3,
+          "thresholdPercent": 30
+        }
+      }
+    }
   }
 }

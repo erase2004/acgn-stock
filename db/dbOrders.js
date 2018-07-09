@@ -1,4 +1,3 @@
-'use strict';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
@@ -10,6 +9,12 @@ export const orderTypeList = [
   '購入',
   '賣出'
 ];
+
+// TODO 將資料換為 sell/buy
+export const orderTypeTranslateMap = {
+  buy: '購入',
+  sell: '賣出'
+};
 
 const schema = new SimpleSchema({
   // 訂單所有者的userId

@@ -1,12 +1,8 @@
-'use strict';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
 // 紀錄資料集
-export const dbLog = new Mongo.Collection('log', {
-  idGeneration: 'MONGO'
-});
-export default dbLog;
+export const dbLog = new Mongo.Collection('log', { idGeneration: 'MONGO' });
 
 // 紀錄的種類
 export const logTypeList = [
@@ -19,11 +15,6 @@ export const logTypeList = [
    * userId0從data.ipAddr登入了系統！
    */
   '登入紀錄',
-
-  /**
-   * 因為「data.reason」的理由獲得了data.stones顆聖晶石！
-   */
-  '免費得石',
 
   /**
    * 【購買得石】userId0花費$data.cost購買了data.amount個data.stoneType！
@@ -42,6 +33,7 @@ export const logTypeList = [
   '發薪紀錄',
 
   /**
+   * FIXME: 保管庫功能已移除，此 log 型態未使用
    * 【公司復活】由於userId...等人的投資，位於保管庫中的「companyId」公司成功復活並重新進入新創計劃，(但無人||data.manager將)就任公司經理。
    */
   '公司復活',
@@ -118,7 +110,7 @@ export const logTypeList = [
   '辭職紀錄',
 
   /**
-   * 【撤職紀錄】userId0以金管會的名義撤除userId1於「companyId」公司的經理人職務與候選資格！
+   * 【撤職紀錄】userId0以「data.reason」的理由撤除userId1於「companyId」公司的經理人職務與候選資格！
    */
   '撤職紀錄',
 
@@ -215,7 +207,7 @@ export const logTypeList = [
   '廣告宣傳',
 
   /**
-   * 【廣告競價】userId0追加了$data.cost的廣告費用在廣告：「data.message」上！
+   * 【廣告競價】userId0追加了$data.cost的廣告費用在userId1發佈的廣告：「data.message」上！
    */
   '廣告追加',
 
@@ -236,57 +228,57 @@ export const logTypeList = [
   '通報金管',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由禁止userId1今後的所有舉報違規行為。
+   * 【玩家停權】userId0以「data.reason」的理由禁止userId1今後的所有舉報違規行為。
    */
   '禁止舉報',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由禁止userId1今後的所有投資下單行為。
+   * 【玩家停權】userId0以「data.reason」的理由禁止userId1今後的所有投資下單行為。
    */
   '禁止下單',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由禁止userId1今後的所有聊天發言行為。
+   * 【玩家停權】userId0以「data.reason」的理由禁止userId1今後的所有聊天發言行為。
    */
   '禁止聊天',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由禁止userId1今後的所有廣告宣傳行為。
+   * 【玩家停權】userId0以「data.reason」的理由禁止userId1今後的所有廣告宣傳行為。
    */
   '禁止廣告',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由向(userId1||「companyId」公司)課以總數為$data.fine的罰金。
+   * 【課以罰款】userId0以「data.reason」的理由向(userId1||「companyId」公司)課以總數為$data.fine的罰金。
    */
   '課以罰款',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由將userId1持有的「companyId」公司股份數量data.stocks給沒收了。
+   * 【沒收股份】userId0以「data.reason」的理由將userId1持有的「companyId」公司股份數量data.stocks給沒收了。
    */
   '沒收股份',
 
   /**
-   * 【違規處理】userId0以「data.reason」的理由禁止userId1今後擔任經理人的資格。
+   * 【玩家停權】userId0以「data.reason」的理由禁止userId1今後擔任經理人的資格。
    */
   '禁任經理',
 
   /**
-   * 【解除禁令】userId0以「data.reason」的理由中止了userId1的舉報違規禁令。
+   * 【玩家復權】userId0以「data.reason」的理由中止了userId1的舉報違規禁令。
    */
   '解除舉報',
 
   /**
-   * 【解除禁令】userId0以「data.reason」的理由中止了userId1的投資下單禁令。
+   * 【玩家復權】userId0以「data.reason」的理由中止了userId1的投資下單禁令。
    */
   '解除下單',
 
   /**
-   * 【解除禁令】userId0以「data.reason」的理由中止了userId1的聊天發言禁令。
+   * 【玩家復權】userId0以「data.reason」的理由中止了userId1的聊天發言禁令。
    */
   '解除聊天',
 
   /**
-   * 【解除禁令】userId0以「data.reason」的理由中止了userId1的廣告宣傳禁令。
+   * 【玩家復權】userId0以「data.reason」的理由中止了userId1的廣告宣傳禁令。
    */
   '解除廣告',
 
@@ -296,7 +288,7 @@ export const logTypeList = [
   '退還罰款',
 
   /**
-   * 【解除禁令】userId0以「data.reason」的理由中止了userId1禁任經理人的處置。
+   * 【玩家復權】userId0以「data.reason」的理由中止了userId1禁任經理人的處置。
    */
   '解除禁任',
 
@@ -368,37 +360,176 @@ export const logTypeList = [
   /**
    * 【礦機營利】「companyId」公司的挖礦機集結眾人之力努力運轉，使其獲得了$data.profit的營利額！
    */
-  '礦機營利'
+  '礦機營利',
+
+  /**
+   * 【身份指派】userId0以「data.reason」的理由將userId1指派了data.role的身份！
+   */
+  '身份指派',
+
+  /**
+   * 【身份解除】userId0以「data.reason」的理由將userId1解除了data.role的身份！
+   */
+  '身份解除',
+
+  /**
+   * 【營運送禮】userId0以「data.reason」的理由發給了所有玩家data.amount數量的data.giftType！
+   * 【營運送禮】userId0以「data.reason」的理由發給了所有活躍玩家data.amount數量的data.giftType！
+   * 【營運送禮】userId0以「data.reason」的理由發給了所有data.days天內有登入的玩家data.amount數量的data.giftType！
+   * 【營運送禮】userId0以「data.reason」的理由發給了玩家userId...data.amount數量的data.giftType！
+   */
+  '營運送禮'
 ];
+
+// log 的分組，方便以群組方式 filtering 之用
+export const logTypeGroupMap = {
+  login: {
+    displayName: '登入紀錄',
+    logTypes: [
+      '登入紀錄'
+    ]
+  },
+  miningMachines: {
+    displayName: '挖礦機與石頭相關',
+    logTypes: [
+      '購買得石',
+      '礦機營利'
+    ]
+  },
+  foundations: {
+    displayName: '新創計創相關',
+    logTypes: [
+      '創立公司',
+      '參與投資',
+      '創立失敗',
+      '創立退款',
+      '創立成功',
+      '創立得股'
+    ]
+  },
+  trading: {
+    displayName: '交易相關',
+    logTypes: [
+      '購買下單',
+      '販賣下單',
+      '取消下單',
+      '系統撤單',
+      '訂單完成',
+      '交易紀錄',
+      '公司釋股'
+    ]
+  },
+  managers: {
+    displayName: '經理相關',
+    logTypes: [
+      '辭職紀錄',
+      '參選紀錄',
+      '支持紀錄',
+      '就任經理',
+      '經理管理',
+      '撤職紀錄'
+    ]
+  },
+  products: {
+    displayName: '產品相關',
+    logTypes: [
+      '推薦產品',
+      '購買產品',
+      '推薦回饋',
+      '消費回饋'
+    ]
+  },
+  profitsAndBonuses: {
+    displayName: '營利與分紅相關',
+    logTypes: [
+      '員工營利',
+      '公司營利',
+      '營利分紅',
+      '亂鬥營利',
+      '礦機營利'
+    ]
+  },
+  taxes: {
+    displayName: '稅賦相關',
+    logTypes: [
+      '季度賦稅',
+      '繳納稅金',
+      '繳稅逾期',
+      '繳稅沒金',
+      '繳稅撤單',
+      '繳稅沒收'
+    ]
+  },
+  advertisings: {
+    displayName: '廣告相關',
+    logTypes: [
+      '廣告宣傳',
+      '廣告追加'
+    ]
+  },
+  arenas: {
+    displayName: '亂鬥相關',
+    logTypes: [
+      '亂鬥報名',
+      '亂鬥失格',
+      '亂鬥退款',
+      '亂鬥加強',
+      '亂鬥營利'
+    ]
+  },
+  roles: {
+    displayName: '身份組相關',
+    logTypes: [
+      '身份指派',
+      '身份解除'
+    ]
+  },
+  fsc: {
+    displayName: '金管會相關',
+    logTypes: [
+      '舉報違規',
+      '金管通告',
+      '通報金管',
+      '禁止舉報',
+      '禁止下單',
+      '禁止聊天',
+      '禁止廣告',
+      '課以罰款',
+      '沒收股份',
+      '禁任經理',
+      '解除舉報',
+      '解除下單',
+      '解除聊天',
+      '解除廣告',
+      '退還罰款',
+      '解除禁任',
+      '查封關停',
+      '解除查封',
+      '違規標記',
+      '違規解標',
+      '公司更名',
+      '產品下架',
+      '產品修正',
+      '撤銷廣告',
+      '撤職紀錄'
+    ]
+  },
+  miscellaneous: {
+    displayName: '其他雜項',
+    logTypes: [
+      '驗證通過',
+      '發薪紀錄',
+      '營運送禮',
+      '公司復活'
+    ]
+  }
+};
 
 // 金管會相關紀錄
-export const accuseLogTypeList = [
-  '舉報違規',
-  '金管通告',
-  '通報金管',
-  '禁止舉報',
-  '禁止下單',
-  '禁止聊天',
-  '禁止廣告',
-  '禁任經理',
-  '課以罰款',
-  '沒收股份',
-  '解除舉報',
-  '解除下單',
-  '解除聊天',
-  '解除廣告',
-  '解除禁任',
-  '退還罰款',
-  '撤職紀錄',
-  '查封關停',
-  '解除查封',
-  '公司更名',
-  '產品下架',
-  '撤銷廣告'
-];
+export const fscLogTypeList = logTypeGroupMap.fsc.logTypes;
 
 // 重要的金管會相關紀錄，需要發出未讀通知給使用者
-export const importantAccuseLogTypeList = [
+export const importantFscLogTypeList = [
   '金管通告',
   '禁止舉報',
   '禁止下單',

@@ -1,4 +1,3 @@
-'use strict';
 import SimpleSchema from 'simpl-schema';
 import { Mongo } from 'meteor/mongo';
 
@@ -14,11 +13,6 @@ const schema = new SimpleSchema({
   // 結束日期
   endDate: {
     type: Date
-  },
-  // 經理人選舉時間(micro time stamp)
-  electTime: {
-    type: Number,
-    optional: true
   },
   // 當季有多少驗證通過的使用者
   userCount: {

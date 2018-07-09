@@ -1,26 +1,23 @@
-'use strict';
 import SimpleSchema from 'simpl-schema';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+
 import { dbAdvertising } from '/db/dbAdvertising';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { inheritUtilForm, handleInputChange as inheritedHandleInputChange } from '../utils/form';
-import { formatDateText, currencyFormat } from '../utils/helpers';
+import { formatDateTimeText, currencyFormat } from '../utils/helpers';
 import { integerString } from '../utils/regexp';
 import { alertDialog } from '../layout/alertDialog';
-import { shouldStopSubscribe } from '../utils/idle';
+import { takeDownAdvertising } from '../utils/methods';
 
 inheritedShowLoadingOnSubscribing(Template.advertising);
 const rInBuyAdvertisingMode = new ReactiveVar(false);
 Template.advertising.onCreated(function() {
   rInBuyAdvertisingMode.set(false);
-  this.autorun(() => {
-    if (shouldStopSubscribe()) {
-      return false;
-    }
+  this.autorunWithIdleSupport(() => {
     this.subscribe('allAdvertising');
   });
 });
@@ -55,7 +52,7 @@ Template.advertising.helpers({
     const createdAtTime = advertisingData.createdAt.getTime();
     const expireTime = new Date(createdAtTime + Meteor.settings.public.advertisingExpireTime);
 
-    return formatDateText(expireTime);
+    return formatDateTimeText(expireTime);
   }
 });
 
@@ -87,20 +84,7 @@ Template.advertising.events({
   'click [data-take-down]'(event) {
     event.preventDefault();
     const advertisingId = $(event.currentTarget).attr('data-take-down');
-    const advertisingData = dbAdvertising.findOne(advertisingId);
-    const message = `
-      <div>確定要撤銷廣告？</div>
-      <div style="max-height: 100px; overflow-y: auto;">${_.escape(advertisingData.message)}</div>
-    `;
-
-    alertDialog.confirm({
-      message,
-      callback: (result) => {
-        if (result) {
-          Meteor.customCall('takeDownAdvertising', advertisingId);
-        }
-      }
-    });
+    takeDownAdvertising(dbAdvertising.findOne(advertisingId));
   }
 });
 

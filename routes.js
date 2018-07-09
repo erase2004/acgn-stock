@@ -1,19 +1,12 @@
-'use strict';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { DocHead } from 'meteor/kadira:dochead';
 import { dbCompanyArchive } from '/db/dbCompanyArchive';
 
-// default route
-FlowRouter.route('/', {
-  name: 'announcement',
-  action() {
-    DocHead.setTitle(Meteor.settings.public.websiteName + ' - 系統公告');
-  }
-});
 
 export const pageNameHash = {
-  announcement: '系統公告',
+  mainPage: '首頁',
+  announcementList: '系統公告',
   tutorial: '遊戲規則',
   instantMessage: '即時訊息',
   companyList: '股市總覽',
@@ -25,9 +18,77 @@ export const pageNameHash = {
   seasonalReport: '季度報告',
   accountInfo: '帳號資訊',
   ruleAgendaList: '規則討論',
-  accuseRecord: '舉報違規紀錄',
+  violationCaseList: '違規案件列表',
+  fscLogs: '金管會執行紀錄',
   fscStock: '金管會持股'
 };
+
+// default route
+FlowRouter.route('/', {
+  name: 'mainPage',
+  action() {
+    DocHead.setTitle(Meteor.settings.public.websiteName);
+  }
+});
+
+const announcementRoute = FlowRouter.group({
+  prefix: '/announcement',
+  name: 'announcementRoute'
+});
+announcementRoute.route('/', {
+  name: 'announcementList',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 系統公告`);
+  }
+});
+announcementRoute.route('/view/:announcementId', {
+  name: 'announcementDetail',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 系統公告內容`);
+  }
+});
+announcementRoute.route('/new', {
+  name: 'createAnnouncement',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 新增系統公告`);
+  }
+});
+announcementRoute.route('/reject/:announcementId', {
+  name: 'rejectAnnouncement',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 系統公告否決`);
+  }
+});
+
+const violationRoute = FlowRouter.group({
+  prefix: '/violation',
+  name: 'violationRoute'
+});
+violationRoute.route('/', {
+  name: 'violationCaseList',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 違規案件列表`);
+  }
+});
+violationRoute.route('/report', {
+  name: 'reportViolation',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 舉報違規`);
+  }
+});
+violationRoute.route('/view/:violationCaseId', {
+  name: 'violationCaseDetail',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 違規案件內容`);
+  }
+});
+
+FlowRouter.route('/fscLogs', {
+  name: 'fscLogs',
+  action() {
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 違規處置紀錄`);
+  }
+});
 
 FlowRouter.route('/fscStock', {
   name: 'fscStock',
@@ -291,9 +352,14 @@ ruleDiscussRoute.route('/vote/:agendaId', {
   }
 });
 
-FlowRouter.route('/accuseRecord', {
-  name: 'accuseRecord',
+// 控制中心
+const controlCenterRoute = FlowRouter.group({
+  prefix: '/controlCenter',
+  name: 'controlCenterRoute'
+});
+controlCenterRoute.route('/sendGift', {
+  name: 'controlCenterSendGift',
   action() {
-    DocHead.setTitle(Meteor.settings.public.websiteName + ' - 舉報違規紀錄');
+    DocHead.setTitle(`${Meteor.settings.public.websiteName} - 控制中心 - 發送禮物`);
   }
 });

@@ -1,24 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { dbProducts } from '/db/dbProducts';
 import { getAvailableProductTradeQuota } from '/db/dbUserOwnedProducts';
-import { voteProduct, adminEditProduct } from '../utils/methods';
+import { voteProduct, adminEditProduct, banProduct } from '../utils/methods';
 import { currencyFormat } from '../utils/helpers';
 import { alertDialog } from '../layout/alertDialog';
 
 Template.productCard.helpers({
-  isAdmin() {
-    const user = Meteor.user();
-
-    return user && user.profile.isAdmin;
-  },
   soldAmount() {
     const { product } = Template.currentData();
     const { totalAmount, stockAmount, availableAmount } = product;
 
     return totalAmount - stockAmount - availableAmount;
+  },
+  pathForReportProductViolation() {
+    const { product } = Template.currentData();
+
+    return FlowRouter.path('reportViolation', null, { type: 'product', id: product._id });
   }
 });
 
@@ -31,16 +32,7 @@ Template.productCard.events({
   'click [data-ban-product]'(event) {
     event.preventDefault();
     const productId = $(event.currentTarget).attr('data-ban-product');
-    alertDialog.dialog({
-      type: 'prompt',
-      title: '違規處理 - 產品下架',
-      message: `請輸入處理事由：`,
-      callback: function(message) {
-        if (message) {
-          Meteor.customCall('banProduct', { productId, message });
-        }
-      }
-    });
+    banProduct(productId);
   },
   'click [data-edit-product]'(event) {
     event.preventDefault();
@@ -65,7 +57,7 @@ Template.productCard.events({
     }
 
     const { money, vouchers } = Meteor.user().profile;
-    const spendables = money + vouchers;
+    const spendables = Math.max(money, 0) + vouchers;
     if (spendables < price) {
       alertDialog.alert('您的剩餘現金不足！');
 

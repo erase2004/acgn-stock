@@ -1,4 +1,3 @@
-'use strict';
 import { $ } from 'meteor/jquery';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -9,8 +8,7 @@ import { dbDirectors } from '/db/dbDirectors';
 import { dbOrders } from '/db/dbOrders';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { createBuyOrder, createSellOrder, retrieveOrder, changeChairmanTitle, toggleFavorite } from '../utils/methods';
-import { isUserId, isChairman } from '../utils/helpers';
-import { shouldStopSubscribe } from '../utils/idle';
+import { isCurrentUser, isCurrentUserChairmanOf, currentUserHasRole } from '../utils/helpers';
 import { rCompanyListViewMode } from '../utils/styles';
 
 inheritedShowLoadingOnSubscribing(Template.companyList);
@@ -20,25 +18,13 @@ const rFilterBy = new ReactiveVar('none');
 const rSortBy = new ReactiveVar('lastPrice');
 export const rCompanyOffset = new ReactiveVar(0);
 Template.companyList.onCreated(function() {
-  this.autorun(() => {
-    if (shouldStopSubscribe()) {
-      return false;
-    }
+  this.autorunWithIdleSupport(() => {
     const keyword = rKeyword.get();
     const matchType = rMatchType.get();
     const onlyShow = rFilterBy.get();
     const sortBy = rSortBy.get();
     const offset = rCompanyOffset.get();
     this.subscribe('companyList', { keyword, matchType, onlyShow, sortBy, offset });
-  });
-  this.autorun(() => {
-    if (shouldStopSubscribe()) {
-      return false;
-    }
-    if (Meteor.user()) {
-      this.subscribe('queryOwnStocks');
-      this.subscribe('queryMyOrder');
-    }
   });
 });
 Template.companyList.helpers({
@@ -161,13 +147,13 @@ const companyListHelpers = {
     if (! Meteor.user()) {
       return 'company-card-default';
     }
-    if (isChairman(companyData._id)) {
+    if (isCurrentUserChairmanOf(companyData._id)) {
       return 'company-card-chairman';
     }
-    if (isUserId(companyData.manager)) {
+    if (isCurrentUser(companyData.manager)) {
       return 'company-card-manager';
     }
-    const amount = companyListHelpers.getStockAmount(companyData._id);
+    const amount = companyListHelpers.getCurrentUserOwnedStockAmount(companyData._id);
     if (amount > 0) {
       return 'company-card-holder';
     }
@@ -185,7 +171,7 @@ const companyListHelpers = {
   getManageHref(companyId) {
     return FlowRouter.path('editCompany', { companyId });
   },
-  getStockAmount(companyId) {
+  getCurrentUserOwnedStockAmount(companyId) {
     const userId = Meteor.user()._id;
     const ownStockData = dbDirectors.findOne({ companyId, userId });
 
@@ -210,6 +196,9 @@ const companyListHelpers = {
     const userId = Meteor.user()._id;
 
     return dbOrders.find({ companyId, userId });
+  },
+  currentUserCanManage(company) {
+    return isCurrentUser(company.manager) || currentUserHasRole('fscMember');
   }
 };
 const companyListEvents = {

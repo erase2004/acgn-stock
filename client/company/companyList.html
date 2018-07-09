@@ -77,7 +77,7 @@
   <div class="col-12 col-md-6 col-lg-4 col-xl-3" style="margin-bottom: 25px;">
     <div class="company-card {{cardDisplayClass this}}">
       <div class="row row-info">
-        <small>{{formatDateText this.createdAt}} 創立</small>
+        <small>{{formatDateTimeText this.createdAt}} 創立</small>
         {{#if currentUser}}
           {{#if isFavorite this._id}}
             <i class="fa fa-heart btn-favorite" aria-hidden="true" data-toggle-favorite="{{this._id}}"></i>
@@ -110,7 +110,7 @@
           <div class="d-flex flex-row-reverse">
             <div class="member-panel">
               <div class="d-flex flex-row-reverse">
-                {{#if isChairman this._id}}
+                {{#if isCurrentUserChairmanOf this._id}}
                   <a class="small" href="#" data-action="changeChairmanTitle">
                     {{this.chairmanTitle}}
                   </a>
@@ -159,7 +159,7 @@
       {{#if currentUser}}
         <div class="row row-info d-flex justify-content-between">
           <p>持有股份</p>
-          <p>{{getStockAmount this._id}} ({{getStockPercentage this._id this.totalRelease}}%)</p>
+          <p>{{getCurrentUserOwnedStockAmount this._id}} ({{getStockPercentage this._id this.totalRelease}}%)</p>
         </div>
         {{#if existOwnOrder this._id}}
           <hr style="margin: 0px;" />
@@ -179,21 +179,15 @@
         {{/if}}
         <hr style="margin: 0px;" />
         <div class="row btn-group">
-          {{#if isUserId this.manager}}
+          {{#if currentUserCanManage this}}
             <a class="btn btn-tab" href="{{getManageHref this._id}}">
               經營管理
             </a>
-          {{else}}
-            {{#if currentUser.profile.isAdmin}}
-              <a class="btn btn-tab" href="{{getManageHref this._id}}">
-                經營管理
-              </a>
-            {{/if}}
           {{/if}}
           <button class="btn btn-tab" type="button" data-action="createBuyOrder">
             購入
           </button>
-          {{#if getStockAmount this._id}}
+          {{#if getCurrentUserOwnedStockAmount this._id}}
             <button class="btn btn-tab" type="button" data-action="createSellOrder">
               賣出
             </button>
@@ -225,11 +219,11 @@
         {{>companyLink this._id}}
       </div>
       <div class="col-4 col-lg-3 text-truncate text-right border-grid row-title">創立日期</div>
-      <div class="col-8 col-lg-3 text-truncate text-right border-grid" title="{{formatDateText this.createdAt}}">
-        {{formatDateText this.createdAt}}
+      <div class="col-8 col-lg-3 text-truncate text-right border-grid" title="{{formatDateTimeText this.createdAt}}">
+        {{formatDateTimeText this.createdAt}}
       </div>
       <div class="col-4 col-lg-3 text-truncate text-right border-grid row-title" title="{{this.chairmanTitle}}">
-        {{#if isChairman this._id}}
+        {{#if isCurrentUserChairmanOf this._id}}
           <a class="text-truncate" href="#" data-action="changeChairmanTitle">
             {{this.chairmanTitle}}
           </a>
@@ -272,7 +266,7 @@
       </div>
       {{#if currentUser}}
         <div class="col-12 border-grid">
-          {{#if isUserId this.manager}}
+          {{#if isCurrentUser this.manager}}
             <div class="mb-1">
               您是該公司的經理人。
               <a class="btn btn-primary btn-sm" href="{{getManageHref this._id}}">
@@ -280,7 +274,7 @@
               </a>
             </div>
           {{else}}
-            {{#if currentUser.profile.isAdmin}}
+            {{#if currentUserHasRole 'fscMember'}}
               <div class="mb-1">
                 <a class="btn btn-primary btn-sm" href="{{getManageHref this._id}}">
                   經營管理
@@ -304,11 +298,11 @@
           </div>
 
           <div class="mb-1">
-            您在該公司持有{{getStockAmount this._id}}數量的股份，股權比例為{{getStockPercentage this._id this.totalRelease}}%。
+            您在該公司持有{{getCurrentUserOwnedStockAmount this._id}}數量的股份，股權比例為{{getStockPercentage this._id this.totalRelease}}%。
             <button class="btn btn-info btn-sm" type="button" data-action="createBuyOrder">
               購入
             </button>
-            {{#if getStockAmount this._id}}
+            {{#if getCurrentUserOwnedStockAmount this._id}}
               <button class="btn btn-info btn-sm" type="button" data-action="createSellOrder">
                 賣出
               </button>

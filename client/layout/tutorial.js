@@ -1,12 +1,17 @@
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { gradeNameList, gradeProportionMap } from '/db/dbCompanies';
 import { dbVariables } from '/db/dbVariables';
 import { VIP_LEVEL5_MAX_COUNT } from '/db/dbVips';
-import { importantAccuseLogTypeList } from '/db/dbLog';
+import { importantFscLogTypeList } from '/db/dbLog';
 import { stonePowerTable } from '/db/dbCompanyStones';
+
+Template.tutorial.onCreated(function() {
+  this.subscribe('fscMembers');
+});
 
 Template.tutorial.events({
   'click .card-header.pointer'(event) {
@@ -15,9 +20,10 @@ Template.tutorial.events({
       .toggleClass('show');
   }
 });
+
 Template.tutorial.helpers({
-  importantAccuseLogTypeList() {
-    return importantAccuseLogTypeList;
+  importantFscLogTypeList() {
+    return importantFscLogTypeList;
   },
   fscRuleURL() {
     return dbVariables.get('fscRuleURL');
@@ -107,5 +113,8 @@ Template.tutorial.helpers({
     const { lockTime } = Meteor.settings.public.companyProfitDistribution;
 
     return Math.floor(lockTime / 1000 / 60 / 60);
+  },
+  fscMembers() {
+    return _.pluck(Meteor.users.find({ 'profile.roles': 'fscMember' }, { sort: { createdAt: 1 } }).fetch(), '_id');
   }
 });
