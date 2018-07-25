@@ -33,25 +33,6 @@
         {{/each}}
       </div>
 
-      {{#if isCurrentUserEmployed}}
-        <form>
-          <div class="form-group">
-            <div class="input-group">
-              <span class="input-group-addon">員工留言</span>
-              <input
-                class="form-control"
-                type="text"
-                name="message"
-                placeholder="身為現任員工，你可以留下一則不超過一百個字的留言，同一時間只能存在一則留言。"
-                maxlength="100"
-                value="{{getMyMessage}}"/>
-              <span class="input-group-btn">
-                <button class="btn btn-primary" type="submit">送出</button>
-              </span>
-            </div>
-          </div>
-        </form>
-      {{/if}}
     </div>
     <div class="col-12 border-grid grid-table">
       <h4 class="my-1">

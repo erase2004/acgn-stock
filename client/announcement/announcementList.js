@@ -6,8 +6,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { dbAnnouncements, announcementCategoryMap, categoryDisplayName } from '/db/dbAnnouncements';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
-import { canCreateAnnouncement } from './helpers';
 
 inheritedShowLoadingOnSubscribing(Template.announcementList);
 
@@ -29,42 +27,11 @@ Template.announcementList.events({
   'change select[name="category"]': _.debounce(function(event, templateInstance) {
     event.preventDefault();
     templateInstance.category.set(templateInstance.$(event.currentTarget).val() || undefined);
-  }, 250),
-  'click button[name="onlyUnread"]'(event, templateInstance) {
-    event.preventDefault();
-    templateInstance.onlyUnread.set(! templateInstance.onlyUnread.get());
-  },
-  'click [data-action="markAllAsRead"]'(event) {
-    event.preventDefault();
-
-    alertDialog.confirm({
-      message: '確定要將所有公告標為已讀嗎？',
-      callback(result) {
-        if (! result) {
-          return;
-        }
-
-        Meteor.customCall('markAllAnnouncementsAsRead');
-      }
-    });
-  }
+  }, 250)
 });
 
 Template.announcementList.helpers({
-  canCreateAnnouncement,
   categoryDisplayName,
-  onlyUnreadButtonArgs() {
-    const templateInstance = Template.instance();
-
-    return {
-      class: 'btn btn-sm btn-info ml-1',
-      text: '只顯示未讀',
-      name: 'onlyUnread',
-      onChanged: (checked) => {
-        templateInstance.onlyUnread.set(checked);
-      }
-    };
-  },
   categorySelectedAttr(category) {
     return Template.instance().category.get() === category ? 'selected' : '';
   },

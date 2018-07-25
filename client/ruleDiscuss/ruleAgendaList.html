@@ -9,14 +9,6 @@
         <div class="text-nowrap text-muted">
           進行中的議程
         </div>
-        {{#if currentUserHasRole 'planner'}}
-          <div class="d-flex flex-wrap justify-content-end ml-auto">
-            <a class="btn btn-primary" href="{{getNewAgendaHref}}">
-              <i class="fa fa-plus" aria-hidden="true"></i>
-              建立新議程
-            </a>
-          </div>
-        {{/if}}
       </h3>
       <hr />
       <table class="table-bordered custom-responsive-table-md w-100" style="table-layout: fixed;">

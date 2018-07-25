@@ -1,7 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { canUserReportViolation, dbViolationCases, categoryDisplayName, stateDisplayName } from '/db/dbViolationCases';
+import { dbViolationCases, categoryDisplayName, stateDisplayName } from '/db/dbViolationCases';
 
 export function paramViolationCaseId() {
   return FlowRouter.getParam('violationCaseId');
@@ -11,10 +10,6 @@ export function paramViolationCase() {
   const violationCaseId = paramViolationCaseId();
 
   return violationCaseId ? dbViolationCases.findOne(violationCaseId) : null;
-}
-
-export function canReportViolation() {
-  return canUserReportViolation(Meteor.user());
 }
 
 export function stateBadgeClass(state) {

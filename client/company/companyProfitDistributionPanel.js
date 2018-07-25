@@ -4,6 +4,8 @@ import { Template } from 'meteor/templating';
 import { getCurrentSeason } from '/db/dbSeason';
 import { paramCompany } from './helpers';
 
+const lastRoundEndTime = new Date(Meteor.settings.public.lastRoundEndTime);
+
 Template.companyProfitDistributionPanel.helpers({
   company() {
     return paramCompany();
@@ -24,6 +26,6 @@ Template.companyProfitDistributionPanel.helpers({
     const { lockTime } = Meteor.settings.public.companyProfitDistribution;
     const { endDate } = getCurrentSeason();
 
-    return Date.now() < endDate.getTime() - lockTime;
+    return lastRoundEndTime.getTime() < endDate.getTime() - lockTime;
   }
 });

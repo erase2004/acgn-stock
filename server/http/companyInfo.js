@@ -1,10 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import url from 'url';
 import querystring from 'querystring';
 
 import { dbCompanyArchive } from '/db/dbCompanyArchive';
-import { dbFoundations } from '/db/dbFoundations';
 import { dbRound } from '/db/dbRound';
 import { debug } from '/server/imports/utils/debug';
 
@@ -32,20 +30,6 @@ WebApp.connectHandlers.use(function(req, res, next) {
           const cacheMicroTime = lastRoundData.endDate.getTime() - Date.now();
           if (cacheMicroTime > 0) {
             const cacheTime = Math.min(Math.floor(cacheMicroTime / 1000), 604800);
-            res.setHeader('Cache-Control', 'public, max-age=' + cacheTime);
-          }
-        }
-      }
-      else if (companyData.status === 'foundation') {
-        const foundationData = dbFoundations.findOne(companyId, {
-          fields: {
-            createdAt: 1
-          }
-        });
-        if (foundationData) {
-          const cacheMicroTime = foundationData.createdAt.getTime() + Meteor.settings.public.foundExpireTime - Date.now();
-          if (cacheMicroTime > 0) {
-            const cacheTime = Math.floor(cacheMicroTime / 1000);
             res.setHeader('Cache-Control', 'public, max-age=' + cacheTime);
           }
         }

@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { dbDirectors } from '/db/dbDirectors';
 import { inheritedShowLoadingOnSubscribing } from '/client/layout/loading';
-import { alertDialog } from '/client/layout/alertDialog';
 import { paramCompany, paramCompanyId } from './helpers';
 
 inheritedShowLoadingOnSubscribing(Template.companyDirectorList);
@@ -42,12 +41,6 @@ Template.companyDirectorList.helpers({
       offset: Template.instance().offset
     };
   },
-  getCurrentUserDirectorMessage() {
-    const userId = Meteor.userId();
-    const companyId = paramCompanyId();
-
-    return dbDirectors.findOne({ companyId, userId }).message;
-  },
   isDirectorInVacation(userId) {
     const user = Meteor.users.findOne(userId);
 
@@ -55,15 +48,3 @@ Template.companyDirectorList.helpers({
   }
 });
 
-Template.companyDirectorList.events({
-  'submit form'(event, templateInstance) {
-    event.preventDefault();
-    const message = templateInstance.$('[name="message"]').val();
-    if (message.length > 100) {
-      alertDialog.alert('輸入訊息過長！');
-    }
-    else if (Meteor.user() && message.length) {
-      Meteor.customCall('directorMessage', paramCompanyId(), message);
-    }
-  }
-});

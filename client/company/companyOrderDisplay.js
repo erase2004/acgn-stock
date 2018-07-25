@@ -1,7 +1,5 @@
 import { Template } from 'meteor/templating';
 
-import { retrieveOrder } from '/client/utils/methods';
-import { dbOrders } from '/db/dbOrders';
 
 Template.companyOrderDisplay.helpers({
   orderTypeDisplayName() {
@@ -14,10 +12,3 @@ Template.companyOrderDisplay.helpers({
   }
 });
 
-Template.companyOrderDisplay.events({
-  'click [data-action="cancelOrder"]'(event, templateInstance) {
-    event.preventDefault();
-    const orderId = templateInstance.$(event.currentTarget).attr('data-order-id');
-    retrieveOrder(dbOrders.findOne(orderId));
-  }
-});

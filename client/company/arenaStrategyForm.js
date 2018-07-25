@@ -5,7 +5,6 @@ import { Template } from 'meteor/templating';
 
 import { inheritUtilForm, handleInputChange as inheritedHandleInputChange } from '/client/utils/form';
 import { getAttributeNumber } from '/db/dbArenaFighters';
-import { alertDialog } from '/client/layout/alertDialog';
 
 inheritUtilForm(Template.arenaStrategyForm);
 const rSortedAttackSequence = new ReactiveVar([]);
@@ -76,11 +75,6 @@ function handleStrategyInputChange(event) {
 function saveStrategyModel(model) {
   const submitData = _.pick(model, 'spCost', 'normalManner', 'specialManner');
   submitData.attackSequence = rSortedAttackSequence.get();
-  Meteor.customCall('decideArenaStrategy', model.companyId, submitData, (error) => {
-    if (! error) {
-      alertDialog.alert('決策完成！');
-    }
-  });
 }
 Template.arenaStrategyForm.helpers({
   spForecast() {
@@ -130,25 +124,4 @@ Template.arenaStrategyForm.helpers({
     });
   }
 });
-Template.arenaStrategyForm.events({
-  'click [data-action="sortAll"]'(event, templateInstance) {
-    const model = templateInstance.model.get();
-    const attackSequence = rSortedAttackSequence.get();
-    rSortedAttackSequence.set(_.union(attackSequence, model.attackSequence));
-  },
-  'click [data-add]'(event, templateInstance) {
-    const index = parseFloat(templateInstance.$(event.currentTarget).attr('data-add'));
-    const sortedAttackSequence = rSortedAttackSequence.get();
-    rSortedAttackSequence.set(_.union(sortedAttackSequence, [index]));
-  },
-  'click [data-remove]'(event, templateInstance) {
-    const index = parseFloat(templateInstance.$(event.currentTarget).attr('data-remove'));
-    const sortedAttackSequence = rSortedAttackSequence.get();
-    rSortedAttackSequence.set(_.without(sortedAttackSequence, index));
-  },
-  reset(event, templateInstance) {
-    event.preventDefault();
-    templateInstance.model.set(templateInstance.data.joinData);
-    rSortedAttackSequence.set([]);
-  }
-});
+

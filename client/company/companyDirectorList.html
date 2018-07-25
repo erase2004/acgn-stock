@@ -37,28 +37,6 @@
         </div>
     {{/each}}
     {{> pagination paginationData}}
-    {{#if isCurrentUserDirectorOf company._id}}
-      <form>
-        <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon">董事會留言</span>
-            <input
-            class="form-control"
-            type="text"
-            name="message"
-            placeholder="身為董事會成員，你可以留下一則不超過一百個字的留言，同一時間只能存在一則留言。"
-            maxlength="100"
-            value="{{getCurrentUserDirectorMessage}}"
-            />
-            <span class="input-group-btn">
-              <button class="btn btn-primary" type="submit">
-                送出
-              </button>
-            </span>
-          </div>
-        </div>
-      </form>
-      {{/if}}
     </div>
   </div>
 </template>

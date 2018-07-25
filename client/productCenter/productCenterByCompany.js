@@ -6,7 +6,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { dbProducts } from '/db/dbProducts';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { voteProduct, adminEditProduct, banProduct } from '../utils/methods';
 
 inheritedShowLoadingOnSubscribing(Template.productCenterByCompany);
 const rProductSortBy = new ReactiveVar('voteCount');
@@ -88,20 +87,5 @@ Template.productListByCompanyTable.events({
       rProductSortBy.set(sortBy);
       rProductSortDir.set(-1);
     }
-  },
-  'click [data-vote-product]'(event) {
-    event.preventDefault();
-    const productId = $(event.currentTarget).attr('data-vote-product');
-    voteProduct(productId);
-  },
-  'click [data-ban-product]'(event) {
-    event.preventDefault();
-    const productId = $(event.currentTarget).attr('data-ban-product');
-    banProduct(productId);
-  },
-  'click [data-edit-product]'(event) {
-    event.preventDefault();
-    const productId = $(event.currentTarget).attr('data-edit-product');
-    adminEditProduct(productId);
   }
 });

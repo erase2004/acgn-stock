@@ -1,9 +1,11 @@
+
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { reactiveInterval } from 'meteor/teamgrid:reactive-interval';
 
-import { alertDialog } from '../layout/alertDialog';
-import { paramAnnouncementId, paramAnnouncement, computeThreshold } from './helpers';
+import { paramAnnouncement, computeThreshold } from './helpers';
+
+const lastRoundEndTime = new Date(Meteor.settings.public.lastRoundEndTime);
 
 Template.announcementRejectionPoll.helpers({
   poll() {
@@ -13,16 +15,7 @@ Template.announcementRejectionPoll.helpers({
     return computeThreshold(paramAnnouncement().rejectionPoll);
   },
   isFinished() {
-    return Date.now() > paramAnnouncement().rejectionPoll.dueAt;
-  },
-  canVote() {
-    const currentUser = Meteor.user();
-    const { currentUserChoice, dueAt } = paramAnnouncement().rejectionPoll;
-
-    const isOverdue = Date.now() > dueAt.getTime();
-    const hasVoted = !! currentUserChoice;
-
-    return currentUser && ! isOverdue && ! hasVoted;
+    return lastRoundEndTime.getTime() > paramAnnouncement().rejectionPoll.dueAt;
   },
   choiceMatches(choice) {
     const { currentUserChoice } = paramAnnouncement().rejectionPoll;
@@ -48,7 +41,7 @@ Template.announcementRejectionPoll.helpers({
   },
   showVoteLists() {
     const { yesVotes, noVotes, dueAt } = paramAnnouncement().rejectionPoll;
-    const isOverdue = Date.now() > dueAt.getTime();
+    const isOverdue = lastRoundEndTime.getTime() > dueAt.getTime();
 
     return isOverdue && yesVotes && noVotes;
   },
@@ -57,37 +50,7 @@ Template.announcementRejectionPoll.helpers({
 
     const { dueAt } = paramAnnouncement().rejectionPoll;
 
-    return Math.max(dueAt.getTime() - Date.now(), 0);
+    return Math.max(dueAt.getTime() - lastRoundEndTime.getTime(), 0);
   }
 });
 
-Template.announcementRejectionPoll.events({
-  'click [data-vote]'(event, templateInstance) {
-    event.preventDefault();
-
-    const choice = templateInstance.$(event.currentTarget).attr('data-vote');
-
-    if (! ['yes', 'no'].includes(choice)) {
-      return;
-    }
-
-    const choiceDisplayMap = {
-      yes: '<span class="text-success">贊成票</span>',
-      no: '<span class="text-danger">反對票</span>'
-    };
-
-    alertDialog.confirm({
-      title: '參與否決投票',
-      message: `參與投票後將無法取消，確定要投下${choiceDisplayMap[choice]}嗎？`,
-      callback(result) {
-        if (! result) {
-          return;
-        }
-
-        const announcementId = paramAnnouncementId();
-
-        Meteor.customCall('voteRejectionPoll', { announcementId, choice });
-      }
-    });
-  }
-});

@@ -70,9 +70,7 @@
         {{> navLink page='mainPage'}}
         {{> navLink page='announcementList'}}
         {{#navLinkGroup text='交易大廳'}}
-          {{> navLink page='instantMessage'}}
           {{> navLink page='companyList' params=page1}}
-          {{> navLink page='foundationList' params=page1}}
           {{> navLink page='advertising'}}
           {{> navLink page='productCenterBySeason' params=currentSeasonParams}}
           {{> navLink page='arenaInfo'  params=currentArenaParams}}
@@ -86,7 +84,7 @@
         {{/if}}
         {{#navLinkGroup text='其他資訊'}}
           {{> navLink page='tutorial'}}
-          {{> navLink page='seasonalReport' params=previousSeasonParams}}
+          {{> navLink page='seasonalReport' params=lastSeasonParams}}
           <li class="nav-item">
             <a class="nav-link" href="https://museum.acgn-stock.com/" target="_blank">
               歷史博物館
@@ -97,9 +95,6 @@
           {{> navLink page='fscLogs'}}
           {{> navLink page='fscStock'}}
         {{/navLinkGroup}}
-        {{#if shouldShowControlCenter}}
-          {{> controlCenterNavLinkGroup}}
-        {{/if}}
         {{#navLinkGroup text='主題配置'}}
           <li class="nav-item">
             <a class="nav-link" href="#" data-theme="light" data-action="switch-theme">亮色</a>

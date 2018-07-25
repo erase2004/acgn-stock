@@ -103,19 +103,6 @@ Template.violationCaseList.helpers({
   stateDisplayName,
   stateBadgeClass,
   pathForViolationCaseDetail,
-  onlyUnreadButtonArgs() {
-    const templateInstance = Template.instance();
-
-    return {
-      class: 'btn btn-sm btn-info ml-1',
-      text: '只顯示未讀',
-      name: 'onlyUnread',
-      checked: templateInstance.onlyUnread.get(),
-      onChanged: (checked) => {
-        templateInstance.onlyUnread.set(checked);
-      }
-    };
-  },
   categoryList() {
     return Object.keys(categoryMap);
   },

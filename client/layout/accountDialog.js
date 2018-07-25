@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { dbValidatingUsers } from '/db/dbValidatingUsers';
 import { handleError } from '../utils/handleError';
 import { addTask, resolveTask } from '../layout/loading';
 import { regUsername } from '../utils/regexp';
@@ -17,19 +16,6 @@ Template.accountDialog.onCreated(function() {
     if (shouldStopSubscribe()) {
       return false;
     }
-    const usermame = rUserName.get();
-    if (usermame) {
-      this.subscribe('validateUser', usermame);
-    }
-  });
-  dbValidatingUsers.find().observeChanges({
-    removed: () => {
-      const dialogMode = rAccountDialogMode.get();
-      if (dialogMode === 'validatePTT' || dialogMode === 'validateBahamut') {
-        const type = dialogMode.replace('validate', '');
-        tryLogin(rUserName.get(), rPassword.get(), type);
-      }
-    }
   });
 });
 Template.accountDialog.events({
@@ -43,14 +29,6 @@ Template.accountDialog.events({
     event.preventDefault();
     const dialogMode = rAccountDialogMode.get();
     switch (dialogMode) {
-      case 'validatePTT': {
-        Meteor.customCall('validatePTTAccount', rUserName.get());
-        break;
-      }
-      case 'validateBahamut': {
-        Meteor.customCall('validateBahamutAccount', rUserName.get());
-        break;
-      }
       case 'loginPTT':
       case 'loginBahamut': {
         const username = templateInstance.$('#loginUserName').val();
@@ -68,9 +46,6 @@ Template.accountDialog.events({
           if (result === true) {
             tryLogin(username, password, type);
           }
-          else {
-            onGotValidateCode(result, type);
-          }
         });
         break;
       }
@@ -81,12 +56,6 @@ Template.accountDialog.events({
 const utilHelpers = {
   displayByDialogMode() {
     switch (rAccountDialogMode.get()) {
-      case 'validatePTT': {
-        return 'accountDialogBodyValidatePTT';
-      }
-      case 'validateBahamut': {
-        return 'accountDialogBodyValidateBahamut';
-      }
       case 'loginPTT': {
         return 'accountDialogBodyLoginPTT';
       }
@@ -94,17 +63,9 @@ const utilHelpers = {
         return 'accountDialogBodyLoginBahamut';
       }
     }
-  },
-  validateUserName() {
-    return rUserName.get();
-  },
-  validateCode() {
-    return rCode.get();
   }
 };
 Template.accountDialog.helpers(utilHelpers);
-Template.accountDialogBodyValidatePTT.helpers(utilHelpers);
-Template.accountDialogBodyValidateBahamut.helpers(utilHelpers);
 Template.accountDialogBodyLoginPTT.helpers(utilHelpers);
 Template.accountDialogBodyLoginBahamut.helpers(utilHelpers);
 
@@ -115,7 +76,9 @@ function tryLogin(username, password, type) {
     resolveTask();
     if (error) {
       if (error.message === 'Incorrect password [403]') {
-        confirmResetPassword(username, password, type);
+        alertDialog.alert({
+          message: '密碼錯誤'
+        });
       }
       else {
         handleError(error);
@@ -124,23 +87,3 @@ function tryLogin(username, password, type) {
   });
 }
 
-function confirmResetPassword(username, password, type) {
-  alertDialog.confirm({
-    message: '密碼錯誤，是否嘗試設定新密碼並重新驗證？',
-    callback: (result) => {
-      if (result) {
-        const reset = true;
-        Meteor.customCall('loginOrRegister', { username, password, type, reset }, (error, result) => {
-          if (! error) {
-            onGotValidateCode(result, type);
-          }
-        });
-      }
-    }
-  });
-}
-
-function onGotValidateCode(code, type) {
-  rCode.set(code);
-  rAccountDialogMode.set('validate' + type);
-}

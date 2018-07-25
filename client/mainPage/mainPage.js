@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { dbRound } from '/db/dbRound';
 import { dbSeason } from '/db/dbSeason';
@@ -16,9 +15,7 @@ Template.mainPage.helpers({
 });
 
 inheritedShowLoadingOnSubscribing(Template.legacyAnnouncement);
-const rInEditAnnouncementMode = new ReactiveVar(false);
 Template.legacyAnnouncement.onCreated(function() {
-  rInEditAnnouncementMode.set(false);
   this.autorun(() => {
     if (shouldStopSubscribe()) {
       return false;
@@ -32,47 +29,18 @@ Template.legacyAnnouncement.helpers({
   getTutorialHref() {
     return FlowRouter.path('tutorial');
   },
-  inEditAnnouncementMode() {
-    return rInEditAnnouncementMode.get() && Meteor.user();
-  },
   announcementDetail() {
     return dbVariables.get('announcementDetail');
   }
 });
-Template.legacyAnnouncement.events({
-  'click [data-action="legacyEditAnnouncement"]'(event) {
-    event.preventDefault();
-    rInEditAnnouncementMode.set(true);
-  }
-});
 
-Template.legacyAnnouncementForm.onRendered(function() {
-  this.$announcementShort = this.$('#announcement-short');
-  this.$announcementDetail = this.$('#announcement-detail');
-});
-Template.legacyAnnouncementForm.events({
-  submit(event, templateInstance) {
-    event.preventDefault();
-    const announcement = templateInstance.$announcementShort.val();
-    const announcementDetail = templateInstance.$announcementDetail.val();
-    Meteor.customCall('legacyEditAnnouncement', announcement, announcementDetail);
-  },
-  reset(event) {
-    event.preventDefault();
-    rInEditAnnouncementMode.set(false);
-  }
-});
-
-const nowTime = new ReactiveVar(Date.now());
-Meteor.setInterval(function() {
-  nowTime.set(Date.now());
-}, 1000);
+const nowTime = new Date(Meteor.settings.public.lastRoundEndTime);
 
 function aboutToEnd(end, hour) {
   const threshold = 1000 * 60 * 60 * hour;
 
   if (end) {
-    const rest = new Date(end).getTime() - nowTime.get();
+    const rest = new Date(end).getTime() - nowTime.getTime();
 
     return ((rest >= 0) && (rest <= threshold));
   }
@@ -170,7 +138,7 @@ Template.systemStatusPanel.helpers({
     return currencyFormat(dbVariables.get('lowPriceThreshold'));
   },
   taskIsReady(begin, end) {
-    const now = nowTime.get();
+    const now = nowTime.getTime();
 
     if (begin && end) {
       begin = new Date(begin).getTime();
@@ -180,7 +148,7 @@ Template.systemStatusPanel.helpers({
     }
   },
   taskLeftInfo(end, hour) {
-    const rest = (new Date(end).getTime() - nowTime.get());
+    const rest = (new Date(end).getTime() - nowTime.getTime());
 
     return aboutToEnd(end, hour) ? `(${formatShortDurationTimeText(rest)})` : '';
   },

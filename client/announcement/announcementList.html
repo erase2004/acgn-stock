@@ -3,14 +3,6 @@
     <div class="card-block">
       <h1 class="card-title d-flex flex-wrap mb-1">
         <div class="text-nowrap">系統公告</div>
-        {{#if canCreateAnnouncement}}
-          <div class="ml-auto">
-            <a class="btn btn-primary" href="{{pathFor 'createAnnouncement'}}">
-              <i class="fa fa-plus" aria-hidden="true"></i>
-              建立新公告
-            </a>
-          </div>
-        {{/if}}
       </h1>
       <hr />
       <div class="d-flex flex-wrap align-items-center">
@@ -26,15 +18,7 @@
               {{/each}}
             </select>
           </div>
-          {{#if currentUser}}
-            {{>checkableButton onlyUnreadButtonArgs}}
-          {{/if}}
         </div>
-        {{#if currentUser}}
-          <div class="ml-auto">
-            <a class="btn btn-sm btn-danger" href="#" data-action="markAllAsRead">全部標為已讀</a>
-          </div>
-        {{/if}}
       </div>
       <table class="table-bordered custom-responsive-table-md w-100">
         <thead>
@@ -47,14 +31,11 @@
         </thead>
         <tbody>
           {{#each announcement in announcements}}
-            <tr style="">
+            <tr>
               <td class="text-center text-truncate px-md-2" data-title="分類">
                 {{categoryDisplayName announcement.category}}
               </td>
               <td class="text-left text-truncate px-md-2" data-title="主旨">
-                {{#if announcement.isUnread}}
-                  <span class="badge badge-danger">未讀</span>
-                {{/if}}
                 <a href="{{pathForAnnouncementDetail announcement._id}}">{{announcement.subject}}</a>
               </td>
               <td class="text-center text-truncate px-md-2" data-title="發佈人">

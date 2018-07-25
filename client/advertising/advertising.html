@@ -4,26 +4,11 @@
       <h1 class="card-title mb-1">
         廣告中心
       </h1>
-      {{#if inBuyMode}}
-        <hr />
-        {{#with defaultAdvertisingData}}
-          {{> buyAdvertisingForm}}
-        {{/with}}
-        <hr />
-      {{/if}}
       <hr />
       <h3 class="d-flex flex-wrap justify-content-start align-items-center">
         <div class="text-nowrap text-muted">
           進行中的廣告
         </div>
-        {{#if currentUser}}
-          <div class="d-flex flex-wrap justify-content-end ml-auto">
-            <button class="btn btn-primary btn-sm" type="button" data-action="buyAdvertising">
-              <i class="fa fa-plus" aria-hidden="true"></i>
-              購買廣告
-            </button>
-          </div>
-        {{/if}}
       </h3>
       <hr />
       <table class="table-bordered custom-responsive-table-md advertisement-list w-100" style="table-layout: fixed;">
@@ -33,9 +18,6 @@
             <th class="text-center text-truncate" title="廣告內容">廣告內容</th>
             <th class="text-center text-truncate" style="width: 120px;" title="費用">費用</th>
             <th class="text-center text-truncate" style="width: 160px;" title="終止日期">終止日期</th>
-            {{#if currentUserHasRole 'fscMember'}}
-              <th class="text-center" style="width: 120px;" title="管理">管理</th>
-            {{/if}}
           </tr>
         </thead>
         <tbody>
@@ -52,32 +34,15 @@
                 {{/if}}
               </td>
               <td class="text-center text-truncate text-nowrap" data-title="費用">
-                {{#if currentUser}}
-                  <button class="btn btn-primary btn-sm" type="button" data-add-pay="{{advertising._id}}">
-                    $ {{currencyFormat advertising.paid}}
-                  </button>
-                {{else}}
-                  $ {{currencyFormat advertising.paid}}
-                {{/if}}
+                $ {{currencyFormat advertising.paid}}
               </td>
               <td class="text-center text-truncate text-nowrap" data-title="終止日期">
                 {{formatExpireDate advertising}}
               </td>
-              {{#if currentUserHasRole 'fscMember'}}
-                <td class="text-center text-nowrap" data-title="管理">
-                  <button class="btn btn-danger btn-sm" type="button" data-take-down="{{advertising._id}}">
-                    撤銷
-                  </button>
-                </td>
-              {{/if}}
             </tr>
             {{else}}
             <tr class="default-content">
-              {{#if currentUserHasRole 'fscMember'}}
-                <td class="text-center text-truncate p-1" colspan="5">目前沒有發布中廣告！</td>
-              {{else}}
-                <td class="text-center text-truncate p-1" colspan="4">目前沒有發布中廣告！</td>
-              {{/if}}
+              <td class="text-center text-truncate p-1" colspan="4">目前沒有發布中廣告！</td>
             </tr>
           {{/each}}
         </tbody>
@@ -86,53 +51,3 @@
   </div>
 </template>
 
-<template name="buyAdvertisingForm">
-  <form>
-    <h3 class="card-subtitle text-muted">購買廣告</h3>
-    <hr />
-    <div class="small">
-      ＊必須
-    </div>
-    <div class="form-group">
-      <label for="message" data-required>廣告訊息</label>
-      <input
-        class="form-control"
-        type="text"
-        name="message"
-        value="{{valueOf 'message'}}"
-        placeholder="請輸入廣告訊息"
-      />
-      {{{errorHtmlOf 'message'}}}
-    </div>
-    <div class="form-group">
-      <label for="url">廣告連結</label>
-      <input
-        class="form-control"
-        type="url"
-        name="url"
-        value="{{valueOf 'url'}}"
-        placeholder="http://"
-      />
-      {{{errorHtmlOf 'url'}}}
-    </div>
-    <div>
-      需支付的廣告費用為： $ {{currencyFormat (valueOf 'paid')}}。
-      目前可立刻顯示的最小廣告費用為： $ {{currencyFormat getDisplayMinimumPaid}}。
-    </div>
-    <div class="form-group">
-      <label for="extraPaid">追加廣告費用</label>
-      <input
-        class="form-control"
-        type="number"
-        name="extraPaid"
-        value="{{valueOf 'extraPaid'}}"
-        min="0"
-      />
-      {{{errorHtmlOf 'extraPaid'}}}
-    </div>
-    <div class="text-right">
-      <button class="btn btn-primary" type="submit">送出</button>
-      <button class="btn btn-secondary" type="reset">取消</button>
-    </div>
-  </form>
-</template>
