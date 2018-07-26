@@ -23,7 +23,7 @@ function queryTodayDealAmount(companyId) {
         logType: '交易紀錄',
         companyId: companyId,
         createdAt: {
-          $gte: new Date(lastRoundEndTime.getTime - 86400000)
+          $gte: new Date(lastRoundEndTime.getTime() - 86400000)
         }
       },
       {
