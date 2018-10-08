@@ -1,7 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { Factory } from 'rosie';
 import faker from 'faker';
 
-import { productTypeList } from '/db/dbProducts';
+import { productTypeList, productRatingList } from '/db/dbProducts';
 import { orderTypeList } from '/db/dbOrders';
 
 export const pttUserFactory = new Factory()
@@ -77,6 +78,9 @@ export const productFactory = new Factory()
     type() {
       return faker.random.arrayElement(productTypeList);
     },
+    rating() {
+      return faker.random.arrayElement(productRatingList);
+    },
     url() {
       return faker.internet.url();
     },
@@ -90,12 +94,40 @@ export const productFactory = new Factory()
     }
   });
 
-export const taxFactory = new Factory()
+export const userOwnedProductFactory = new Factory()
   .attrs({
-    tax() {
+    userId() {
+      return faker.random.uuid();
+    },
+    productId() {
+      return faker.random.uuid();
+    },
+    amount() {
       return faker.random.number({ min: 1 });
     },
-    zombie() {
+    price() {
+      return faker.random.number({ min: 1 });
+    },
+    companyId() {
+      return faker.random.uuid();
+    },
+    seasonId() {
+      return faker.random.uuid();
+    },
+    createdAt() {
+      return new Date();
+    }
+  });
+
+export const taxFactory = new Factory()
+  .attrs({
+    stockTax() {
+      return faker.random.number({ min: 1 });
+    },
+    moneyTax() {
+      return faker.random.number({ min: 1 });
+    },
+    zombieTax() {
       return faker.random.number({ min: 1 });
     },
     fine: 0,
@@ -107,6 +139,12 @@ export const taxFactory = new Factory()
 
 export const orderFactory = new Factory()
   .attrs({
+    userId() {
+      return faker.random.uuid();
+    },
+    companyId() {
+      return faker.random.uuid();
+    },
     orderType() {
       return faker.random.arrayElement(orderTypeList);
     },
@@ -114,6 +152,44 @@ export const orderFactory = new Factory()
       return faker.random.number({ min: 1 });
     },
     unitPrice() {
+      return faker.random.number({ min: 1 });
+    },
+    createdAt() {
+      return new Date();
+    }
+  });
+
+export const seasonFactory = new Factory()
+  .attr('beginDate', () => {
+    return new Date();
+  })
+  .attr('endDate', ['beginDate'], (beginDate) => {
+    return new Date(beginDate.setMinutes(0, 0, 0) + Meteor.settings.public.seasonTime);
+  })
+  .attrs({
+    ordinal() {
+      return 1;
+    },
+    userCount() {
+      return faker.random.number({ min: 0 });
+    },
+    companiesCount() {
+      return faker.random.number({ min: 0 });
+    },
+    productCount() {
+      return faker.random.number({ min: 0 });
+    }
+  });
+
+export const directorFactory = new Factory()
+  .attrs({
+    userId() {
+      return faker.random.uuid();
+    },
+    companyId() {
+      return faker.random.uuid();
+    },
+    stocks() {
       return faker.random.number({ min: 1 });
     },
     createdAt() {
