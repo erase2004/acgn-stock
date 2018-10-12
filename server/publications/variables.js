@@ -23,9 +23,7 @@ Meteor.publish('variables', function() {
           'releaseStocksForNoDealBegin',
           'releaseStocksForNoDealEnd',
           'arenaCounter',
-          'fscRuleURL',
-          'foundation.minInvestorCount',
-          'foundation.minAmountPerInvestor'
+          'fscRuleURL'
         ]
       }
     },

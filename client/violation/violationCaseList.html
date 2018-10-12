@@ -50,9 +50,6 @@
               </button>
             </div>
           </div>
-          {{#if currentUser}}
-            {{>checkableButton onlyUnreadButtonArgs}}
-          {{/if}}
         </div>
       </div>
       {{> pagination paginationData}}
@@ -60,9 +57,6 @@
         <div class="card my-3 {{violationCaseCardClass violationCase}}">
           <div class="card-header">
             <h4 class="d-flex flex-wrap align-items-center">
-              {{#if violationCase.isUnread}}
-                <div class="badge badge-pill badge-danger mr-1">未讀</div>
-              {{/if}}
               {{#if violationCase.isReportedByCurrentUser}}
                 <small class="badge badge-pill badge-info mr-1">我的舉報</small>
               {{/if}}

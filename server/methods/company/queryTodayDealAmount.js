@@ -5,6 +5,8 @@ import { dbLog } from '/db/dbLog';
 import { limitMethod } from '/server/imports/utils/rateLimit';
 import { debug } from '/server/imports/utils/debug';
 
+const lastRoundEndTime = new Date(Meteor.settings.public.lastRoundEndTime);
+
 Meteor.methods({
   queryTodayDealAmount(companyId) {
     check(companyId, String);
@@ -21,7 +23,7 @@ function queryTodayDealAmount(companyId) {
         logType: '交易紀錄',
         companyId: companyId,
         createdAt: {
-          $gte: new Date(Date.now() - 86400000)
+          $gte: new Date(lastRoundEndTime.getTime() - 86400000)
         }
       },
       {

@@ -4,16 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import { DocHead } from 'meteor/kadira:dochead';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { dbCompanies } from '/db/dbCompanies';
 import { dbEmployees } from '/db/dbEmployees';
 import { dbVips } from '/db/dbVips';
-import { roleDisplayName, getManageableRoles } from '/db/users';
+import { roleDisplayName } from '/db/users';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
-import { alertDialog } from '../layout/alertDialog';
 import { shouldStopSubscribe } from '../utils/idle';
-import { changeChairmanTitle, confiscateUserMoney, sendFscNotice, banUser, confiscateAllUserStocks, returnUserMoney, forceCancelUserOrders } from '../utils/methods';
 import { accountInfoCommonHelpers, paramUserId, paramUser, isCurrentUser } from './helpers';
 
 inheritedShowLoadingOnSubscribing(Template.accountInfo);
@@ -46,9 +43,6 @@ Template.accountInfo.helpers({
   ...accountInfoCommonHelpers,
   isDisplayPanel(panelType) {
     return _.contains(rDisplayPanelList.get(), panelType);
-  },
-  currentUserHasManageableRoles() {
-    return getManageableRoles(Meteor.user());
   }
 });
 Template.accountInfo.events({
@@ -96,66 +90,6 @@ Template.accountInfoBasic.helpers({
   },
   isEndingVacation() {
     return this.profile.isEndingVacation;
-  },
-  pathForReportUserViolation() {
-    return FlowRouter.path('reportViolation', null, { type: 'user', id: paramUserId() });
-  }
-});
-
-Template.accountInfoBasic.events({
-  'click [data-action="sendFscNotice"]'(event) {
-    event.preventDefault();
-    sendFscNotice({ userIds: [paramUserId()] });
-  },
-  'click [data-ban]'(event) {
-    event.preventDefault();
-    const banType = $(event.currentTarget).attr('data-ban');
-    banUser(paramUser(), banType);
-  },
-  'click [data-action="confiscateUserMoney"]'(event) {
-    event.preventDefault();
-    confiscateUserMoney(paramUser());
-  },
-  'click [data-action="returnUserMoney"]'(event) {
-    event.preventDefault();
-    returnUserMoney(paramUser());
-  },
-  'click [data-action="forceCancelUserOrders"]'(event) {
-    event.preventDefault();
-    forceCancelUserOrders(paramUser());
-  },
-  'click [data-action="confiscateAllUserStocks"]'(event) {
-    event.preventDefault();
-    confiscateAllUserStocks(paramUser());
-  },
-  'click [data-action="unregisterEmployee"]'(event) {
-    event.preventDefault();
-    Meteor.customCall('unregisterEmployee');
-    // FIXME 底下改成 customCall 的 callback
-    alertDialog.alert('您已取消報名！');
-  },
-  'click [data-action="startVacation"]'(event) {
-    event.preventDefault();
-    alertDialog.confirm({
-      message: '確定要開始渡假嗎？',
-      callback: (result) => {
-        if (result) {
-          Meteor.customCall('startVacation', (err) => {
-            if (! err) {
-              alertDialog.alert('您已進入渡假模式！');
-            }
-          });
-        }
-      }
-    });
-  },
-  'click [data-action="toggleEndingVacation"]'(event) {
-    event.preventDefault();
-    Meteor.customCall('toggleEndingVacation', function(err, result) {
-      if (! err) {
-        alertDialog.alert(result ? '您已送出收假請求！' : '您已取消收假請求！');
-      }
-    });
   }
 });
 
@@ -216,12 +150,6 @@ Template.chairmanTitleList.helpers({
       dataNumberPerPage: 10,
       offset: chairmanOffset
     };
-  }
-});
-Template.chairmanTitleList.events({
-  'click [data-action="changeChairmanTitle"]'() {
-    const companyData = this;
-    changeChairmanTitle(companyData);
   }
 });
 

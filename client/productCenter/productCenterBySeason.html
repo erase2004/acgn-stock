@@ -62,11 +62,6 @@
           得票數
           {{{getSortIcon 'voteCount'}}}
         </th>
-        {{#if currentUserHasRole 'fscMember'}}
-          <th class="text-center" style="width: 140px;" title="管理">
-            管理
-          </th>
-        {{/if}}
       </tr>
     </thead>
     <tbody>
@@ -74,11 +69,7 @@
         {{> productInfoBySeasonTable}}
       {{else}}
         <tr class="default-content">
-          {{#if currentUserHasRole 'fscMember'}}
-            <td class="text-center" colspan="6">當季度沒有任何產品上架！</td>
-          {{else}}
-            <td class="text-center" colspan="5">當季度沒有任何產品上架！</td>
-          {{/if}}
+          <td class="text-center" colspan="5">當季度沒有任何產品上架！</td>
         </tr>
       {{/each}}
     </tbody>
@@ -112,17 +103,11 @@
         class="btn btn-primary btn-sm"
         type="button"
         data-vote-product="{{this._id}}"
-        disabled={{cannotVote}}
+        disabled="true"
       >
         {{this.voteCount}}
         <i class="fa fa-ticket" aria-hidden="true"></i>
       </button>
     </td>
-    {{#if currentUserHasRole 'fscMember'}}
-      <td class="text-center text-nowrap" data-title="管理">
-        <button class="btn btn-sm btn-danger" title="修改" data-edit-product="{{this._id}}">修改</button>
-        <button class="btn btn-sm btn-danger" title="下架" data-ban-product="{{this._id}}">下架</button>
-      </td>
-    {{/if}}
   </tr>
 </template>

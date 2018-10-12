@@ -8,9 +8,6 @@
         <th class="text-center text-nowrap">殭屍稅</th>
         <th class="text-center text-nowrap ">逾期罰金</th>
         <th class="text-center text-nowrap">已繳納</th>
-        {{#if isCurrentUser}}
-          <th class="text-center text-nowrap">繳納稅金</th>
-        {{/if}}
       </tr>
       </thead>
     <tbody>
@@ -34,21 +31,10 @@
         <td class="text-right text-truncate text-nowrap" data-title="已繳納" title="{{taxes.paid}}">
             $ {{currencyFormat taxes.paid}}
         </td>
-        {{#if isCurrentUser}}
-            <td class="text-center" data-title="繳納稅金">
-            <button class="btn btn-success btn-sm" type="button" data-pay="{{taxes._id._str}}">
-                繳納稅金
-            </button>
-            </td>
-        {{/if}}
       </tr>
     {{else}}
       <tr class="default-content">
-        {{#if isCurrentUser}}
-          <td class="text-center text-truncate p-1" colspan="7">目前沒有需要繳納的稅金！</td>
-        {{else}}
-          <td class="text-center text-truncate p-1" colspan="6">目前沒有需要繳納的稅金！</td>
-        {{/if}}
+        <td class="text-center text-truncate p-1" colspan="6">目前沒有需要繳納的稅金！</td>
       </tr>
     {{/each}}
     </tbody>

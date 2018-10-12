@@ -3,68 +3,21 @@
     <div class="modal-dialog" role="document">
       <form class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">登入╱註冊</h5>
+          <h5 class="modal-title" id="exampleModalLabel">登入</h5>
         </div>
         <div class="modal-body">
           {{> Template.dynamic template=displayByDialogMode}}
         </div>
         <div class="modal-footer">
-          {{#if validateCode}}
-            <button class="btn btn-secondary" type="reset">
-              取消
-            </button>
-            <button class="btn btn-primary" type="submit">
-              進行驗證
-            </button>
-          {{else}}
-            <button class="btn btn-secondary" type="reset">
-              取消
-            </button>
-            <button class="btn btn-primary" type="submit">
-              登入╱註冊
-            </button>
-          {{/if}}
+          <button class="btn btn-secondary" type="reset">
+            取消
+          </button>
+          <button class="btn btn-primary" type="submit">
+            登入
+          </button>
         </div>
       </form>
     </div>
-  </div>
-</template>
-
-<template name="accountDialogBodyValidatePTT">
-  <div class="form-group">
-    您的PTT帳號
-    <span class="text-info">{{validateUserName}}</span>
-    尚未通過驗證，
-    <br />
-    請在PTT {{getVariable 'validateUserBoardName'}}板的文章
-    <a href="{{getVariable 'validateUserUrl'}}" target="_blank">
-      {{getVariable 'validateUserAID'}}
-    </a>底下，
-    <br />使用帳號
-    <span class="text-info">{{validateUserName}}</span>
-    以<span class="text-danger">推</span>文的方式輸入驗證碼
-    <span class="text-primary">{{validateCode}}</span>。
-    <br/>
-    <span class="text-danger">
-      注意！本系統驗證方式是透過PTT Web版抓取網頁進行分析，而PTT Web版通常需要5~10分鐘才會更新最新的推文，
-      請確認<a href="{{getVariable 'validateUserUrl'}}" target="_blank">驗證文章</a>最底下已經出現你的驗證推文之後再點擊驗證按鈕，
-      以減少不必要伺服器負載，感謝您的配合！
-    </span>
-  </div>
-</template>
-
-<template name="accountDialogBodyValidateBahamut">
-  <div class="form-group">
-    您的巴哈姆特帳號
-    <span class="text-info">{{validateUserName}}</span>
-    尚未通過驗證，請確認您的帳號已通過巴哈姆特的<span class="text-danger">手機認證</span>，
-    並可在您的勇者小屋中見到有關手機認證的相關資訊（個人紀錄區塊有顯示）。之後在您的
-    <a href="https://home.gamer.com.tw/homeReplyList.php?owner={{validateUserName}}" target="_blank">
-      訪客留言頁面
-    </a>
-    裡以您的帳號<span class="text-info">{{validateUserName}}</span>進行訪客留言，
-    留言內容為驗證碼<span class="text-primary">{{validateCode}}</span>。
-    確定留言已出現在頁面上之後，再點擊進行<span class="text-info">驗證按鈕</span>。
   </div>
 </template>
 

@@ -11,6 +11,7 @@
           value="{{valueOf 'spCost'}}"
           min="1"
           max="10"
+          readonly
         />
       </div>
       {{{errorHtmlOf 'spCost'}}}
@@ -28,6 +29,7 @@
         value="{{getManner 'normal' 0}}"
         maxlength="150"
         placeholder="第一招普通攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -36,6 +38,7 @@
         value="{{getManner 'normal' 1}}"
         maxlength="150"
         placeholder="第二招普通攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -44,6 +47,7 @@
         value="{{getManner 'normal' 2}}"
         maxlength="150"
         placeholder="第三招普通攻擊的招式名稱"
+        readonly
       />
     </div>
     <div class="form-group col-12 col-lg-6">
@@ -55,6 +59,7 @@
         value="{{getManner 'special' 0}}"
         maxlength="150"
         placeholder="第一招特殊攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -63,6 +68,7 @@
         value="{{getManner 'special' 1}}"
         maxlength="150"
         placeholder="第二招特殊攻擊的招式名稱"
+        readonly
       />
       <input
         class="form-control"
@@ -71,13 +77,14 @@
         value="{{getManner 'special' 2}}"
         maxlength="150"
         placeholder="第三招特殊攻擊的招式名稱"
+        readonly
       />
     </div>
     {{#if hasEnemy}}
       <div class="form-group col-12 col-lg-6">
         <div class="mb-2">
           排列優先攻擊順序：
-          <button class="btn btn-success btn-sm float-right" type="button" data-action="sortAll">
+          <button class="btn btn-success btn-sm float-right" type="button" data-action="sortAll" disabled="true">
             自動排序
             <i class="fa fa-angle-double-right" aria-hidden="true"></i>
           </button>
@@ -90,13 +97,6 @@
                 style="border: 1px solid #ddd; line-height: 1.75rem;"
               >
                 <div class="text-truncate mr-auto">{{>companyLink this.companyId}}</div>
-                <button
-                  class="btn btn-success btn-sm"
-                  type="button"
-                  data-add="{{this._id}}"
-                >
-                  <i class="fa fa-plus-square"></i>
-                </button>
               </div>
             {{/if}}
           {{/each}}
@@ -115,13 +115,6 @@
               <div class="text-truncate mr-auto">
                 {{>companyLink this.companyId}}
               </div>
-              <button
-                class="btn btn-danger btn-sm"
-                type="button"
-                data-remove="{{this._id}}"
-              >
-                <i class="fa fa-minus-square"></i>
-              </button>
             </div>
           {{/each}}
         </div>
@@ -129,12 +122,5 @@
     {{else}}
       <div class="col-12 text-info">報名尚未截止，暫時無法設定攻擊優先順序。</div>
     {{/if}}
-    <hr />
-    <div class="col-12 text-right">
-      {{#if hasEnemy}}
-      <button class="btn btn-secondary" type="reset">重設</button>
-      {{/if}}
-      <button class="btn btn-primary" type="submit">送出</button>
-    </div>
   </form>
 </template>

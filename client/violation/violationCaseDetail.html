@@ -31,22 +31,6 @@
           <span class="text-nowrap">{{violationCase._id}}</span>
         </div>
 
-        {{#if currentUserHasRole 'fscMember'}}
-          <hr/>
-          <div>
-            {{#if canExecuteAction 'comment'}}
-              <a href="#" class="btn btn-sm {{actionButtonClass 'comment'}}" data-action="comment">加入註解</a>
-            {{/if}}
-            {{#if canExecuteAction 'setState'}}
-              {{#each nextState in nextStateList}}
-                <a href="#" class="btn btn-sm {{setStateButtonClass nextState}}" data-action="setState" data-next-state="{{nextState}}">
-                  {{setStateButtonText nextState}}
-                </a>
-              {{/each}}
-            {{/if}}
-          </div>
-        {{/if}}
-
         <hr/>
 
         <div class="mb-3">
@@ -55,38 +39,11 @@
             {{#each violator in violationCase.violators}}
               <li>
                 {{>violatorDisplay violator}}
-                {{#if canExecuteAction 'removeViolator'}}
-                  <a href="#" class="badge badge-danger"
-                    data-action="removeViolator"
-                    data-violator-type="{{violator.violatorType}}"
-                    data-violator-id="{{violator.violatorId}}">
-                    <i class="fa fa-times"></i> 移除
-                  </a>
-                {{/if}}
               </li>
             {{else}}
               <em>一個都沒有！</em>
             {{/each}}
           </ul>
-          {{#if canExecuteAction 'addViolator'}}
-            <form class="form-inline" name="addViolatorForm">
-              <div class="input-group input-group-sm">
-                <span class="input-group-addon">違規者類型</span>
-                <select class="form-control form-control-sm" name="violatorType">
-                  {{#each violatorType in validViolatorTypeList}}
-                    <option value="{{violatorType}}">{{violatorTypeDisplayName violatorType}}</option>
-                  {{/each}}
-                </select>
-              </div>
-              <div class="input-group input-group-sm">
-                <span class="input-group-addon">違規者識別碼</span>
-                <input type="text" class="form-control form-control-sm" name="violatorId" placeholder="請輸入識別碼">
-              </div>
-              <button type="submit" class="btn btn-sm btn-primary">
-                <i class="fa fa-plus"></i> 增加違規名單
-              </button>
-            </form>
-          {{/if}}
         </div>
 
         <div class="mb-3">
@@ -97,32 +54,11 @@
             {{#each relatedCaseId in violationCase.relatedCases}}
               <li>
                 <a class="mr-1" href="{{pathForViolationCaseDetail relatedCaseId}}">{{relatedCaseId}}</a>
-                {{#if canExecuteAction 'removeRelatedCase'}}
-                  <a href="#" class="badge badge-danger" data-action="removeRelatedCase" data-related-case-id="{{relatedCaseId}}">
-                    <i class="fa fa-times"></i> 移除
-                  </a>
-                {{/if}}
-                {{#if canExecuteAction 'mergeViolatorsFromRelatedCase'}}
-                  <a href="#" class="badge badge-info" data-action="mergeViolatorsFromRelatedCase" data-related-case-id="{{relatedCaseId}}">
-                    <i class="fa fa-paste"></i> 合併違規名單
-                  </a>
-                {{/if}}
               </li>
             {{else}}
               <em>並沒有。</em>
             {{/each}}
           </ul>
-          {{#if canExecuteAction 'addRelatedCase'}}
-            <form class="form-inline" name="addRelatedCaseForm">
-              <div class="input-group input-group-sm">
-                <span class="input-group-addon">案件識別碼</span>
-                <input type="text" class="form-control form-control-sm" name="relatedCaseId" placeholder="請輸入識別碼">
-              </div>
-              <button type="submit" class="btn btn-sm btn-primary">
-                <i class="fa fa-plus"></i> 增加相關案件
-              </button>
-            </form>
-          {{/if}}
         </div>
 
         <div class="mb-3">

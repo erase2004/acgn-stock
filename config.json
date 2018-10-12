@@ -1,81 +1,26 @@
 {
   "public": {
-    "debugMode": false,
+    "debugMode": true,
     "websiteInfo": {
-      "websiteName": "ACGN股票交易市場",
+      "websiteName": "(δ)ACGN股票歷史博物館",
       "description": "｜ 尋找你的老婆！ \n｜ 喜歡嗎？那麼就入股吧！",
-      "domainName": "acgn-stock.com",
-      "image": "https://acgn-stock.com/ms-icon-310x310.png",
+      "domainName": "r4-museum.acgn-stock.com",
+      "image": "https://r4-museum.acgn-stock.com/ms-icon-310x310.png",
       "timezone": 8
     },
     "intervalTimer": 60000,
-    "releaseStocksForHighPriceInterval": {
-      "min": 10800000,
-      "max": 21600000
-    },
-    "releaseStocksForNoDealInterval": {
-      "min": 86400000,
-      "max": 172800000
-    },
-    "recordListPriceInterval": {
-      "min": 10800000,
-      "max": 21600000
-    },
-    "priceLimits": {
-      "normal": {
-        "upper": 1.15,
-        "lower": 0.85
-      },
-      "lowPriceCompany": {
-        "upper": 1.30
-      },
-      "firstStageValueLowerThanCapitalCompany": {
-        "lower": 0.95
-      },
-      "secondStageValueLowerThanCapitalCompany": {
-        "lower": 0.9
-      }
-    },
-    "valueLowerThanCapitalCompanyFallLimitTimes": {
-      "firstStageTime": 604800000,
-      "secondStageTime": 1209600000
-    },
-    "zeroVolumePriceDrop": {
-      "orderAgeThreshold": 21600000,
-      "tradeVolumeLookbackTime": 86400000
-    },
-    "checkChairmanInterval": 600000,
-    "founderEarnestMoney": 1024,
-    "foundExpireTime": 43200000,
-    "foundationVariablesUpdateSeasonOrdinals": [2],
-    "maximumInvest": 4096,
-    "minReleaseStock": 1000,
-    "newUserInitialMoney": 10000,
     "newUserBirthStones": 1,
-    "salaryPerPay": 1000,
     "seasonNumberInRound": 13,
     "arenaIntervalSeasonNumber": 1,
     "arenaMaximumRound": 1000,
     "arenaMinInvestedAmount": 10000,
-    "arenaJoinEndTime": 86400000,
     "seasonTime": 604800000,
     "electManagerTime": 86400000,
-    "electManagerLastLoginTimeThreshold": 259200000,
-    "contendManagerEndTime": 475200000,
     "displayAdvertisingNumber": 5,
     "advertisingExpireTime": 259200000,
-    "maximumFavorite": 60,
-    "maximumRuleIssue": 10,
-    "maximumRuleIssueOption": 10,
     "voteUserNeedCreatedIn": 604800000,
-    "maximumCompanySalaryPerDay": 2000,
-    "minimumCompanySalaryPerDay": 500,
     "defaultCompanySalaryPerDay": 1000,
     "announceSalaryTime": 259200000,
-    "vacationModeZombieTaxPerDay": 500,
-    "minIntervalTimeBetweenVacations": 604800000,
-    "taxExpireTime": 259200000,
-    "releaseStocksForNoDealTradeLogLookbackIntervalTime": 86400000,
     "miningMachineOperationTime": 86400000,
     "stonePrice": {
       "rainbow": 100000,
@@ -132,7 +77,6 @@
         "stockBonusFactor": 2.00
       }
     },
-    "vipLevelCheckInterval": 1800000,
     "vipPreviousSeasonScoreWeight": 0.80,
     "companyProfitDistribution": {
       "lockTime": 86400000,
@@ -154,7 +98,6 @@
         "default": 3
       }
     },
-    "newRoundFoundationRestrictionTime": 3600000,
     "announcement": {
       "plannedRuleChanges": {
         "rejectionPetition": {
@@ -179,7 +122,8 @@
           "thresholdPercent": 30
         }
       }
-    }
+    },
+    "lastRoundEndTime": "2018-10-07T02:00:01.000Z"
   },
   "autoRedirectDomainPortSettings": {
     "8880": "test.acgn-stock.com"

@@ -3,9 +3,6 @@ import { _ } from 'meteor/underscore';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-import { dbProducts } from './dbProducts';
-import { dbVariables } from './dbVariables';
-
 // 公司資料集
 export const dbCompanies = new Mongo.Collection('companies');
 export default dbCompanies;
@@ -41,112 +38,6 @@ export const gradeFactorTable = {
     D: 0.1
   }
 };
-
-// 取得公司計劃上架的產品
-export function getPlanningProducts(companyData, options = {}) {
-  return dbProducts.find({ companyId: companyData._id, state: 'planning' }, options);
-}
-
-// 取得公司的總生產資金
-export function getTotalProductionFund(companyData) {
-  return Math.round(companyData.capital * 0.7 + companyData.baseProductionFund);
-}
-
-// 取得公司已使用的生產資金
-export function getUsedProductionFund(companyData) {
-  return getPlanningProducts(companyData, { fields: { price: 1, totalAmount: 1 } })
-    .fetch()
-    .reduce((sum, { price, totalAmount }) => {
-      return sum + price * totalAmount;
-    }, 0);
-}
-
-// 取得公司剩餘可用的生產資金
-export function getAvailableProductionFund(companyData) {
-  return getTotalProductionFund(companyData) - getUsedProductionFund(companyData);
-}
-
-// 判斷是否為低價公司
-export function isLowPriceCompany(companyData) {
-  const lowPriceThreshold = dbVariables.get('lowPriceThreshold');
-
-  return companyData.listPrice < lowPriceThreshold;
-}
-
-// 判斷是否為高價公司
-export function isHighPriceCompany(companyData) {
-  const highPriceThreshold = dbVariables.get('highPriceThreshold');
-
-  return companyData.listPrice >= highPriceThreshold;
-}
-
-/**
- * 取得買賣單的上下限
- * @param {Object} companyData 內容必須包含 listPrice, capital, totalValue, createdAt
- * @returns {Object} upper, lower
- */
-export function getPriceLimits(companyData) {
-  const upper = getPriceUpperLimit(companyData);
-  const lower = getPriceLowerLimit(companyData);
-
-  return { upper, lower };
-}
-
-function getPriceUpperLimit(companyData) {
-  const priceLimits = Meteor.settings.public.priceLimits;
-  let upperPrice;
-  if (isLowPriceCompany(companyData)) {
-    upperPrice = companyData.listPrice * priceLimits.lowPriceCompany.upper;
-  }
-  else {
-    upperPrice = companyData.listPrice * priceLimits.normal.upper;
-  }
-
-  return Math.ceil(upperPrice);
-}
-
-function getPriceLowerLimit(companyData) {
-  const priceLimits = Meteor.settings.public.priceLimits;
-  let lowerPrice;
-  if (isFirstStageValueLowerThanCapitalCompany(companyData)) {
-    lowerPrice = companyData.listPrice * priceLimits.firstStageValueLowerThanCapitalCompany.lower;
-  }
-  else if (isSecondStageValueLowerThanCapitalCompany(companyData)) {
-    lowerPrice = companyData.listPrice * priceLimits.secondStageValueLowerThanCapitalCompany.lower;
-  }
-  else {
-    lowerPrice = companyData.listPrice * priceLimits.normal.lower;
-  }
-
-  return Math.max(Math.floor(lowerPrice), 1);
-}
-
-function isValueLowerThanCapital(companyData) {
-  return companyData.totalValue < companyData.capital;
-}
-
-function isFirstStageValueLowerThanCapitalCompany(companyData) {
-  const firstStageTime = Meteor.settings.public.valueLowerThanCapitalCompanyFallLimitTimes.firstStageTime;
-  const createdTime = Date.now() - companyData.createdAt.getTime();
-  if (createdTime < firstStageTime) {
-    return isValueLowerThanCapital(companyData);
-  }
-  else {
-    return false;
-  }
-}
-
-function isSecondStageValueLowerThanCapitalCompany(companyData) {
-  const secondStageTime = Meteor.settings.public.valueLowerThanCapitalCompanyFallLimitTimes.secondStageTime;
-  const createdTime = Date.now() - companyData.createdAt.getTime();
-  if (createdTime < secondStageTime) {
-    return isValueLowerThanCapital(companyData);
-  }
-  else {
-    return false;
-  }
-}
-
 
 const schema = new SimpleSchema({
   // 公司名稱

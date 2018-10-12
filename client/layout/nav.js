@@ -7,10 +7,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { dbArena } from '/db/dbArena';
 import { dbSeason } from '/db/dbSeason';
 import { stoneTypeList } from '/db/dbCompanyStones';
-import {
-  getAccessibleControlCenterPageKeys,
-  pathForControlCenterPage
-} from '/client/controlCenter/helpers';
 import { pageNameHash } from '/routes';
 import { rMainTheme } from '../utils/styles';
 import { shouldStopSubscribe } from '../utils/idle';
@@ -116,20 +112,17 @@ Template.nav.helpers({
       return {};
     }
   },
-  previousSeasonParams() {
-    const seasonList = dbSeason
-      .find({}, {
+  lastSeasonParams() {
+    const seasonData = dbSeason
+      .findOne({}, {
         sort: {
           beginDate: -1
-        },
-        limit: 2
-      })
-      .fetch();
-    const previousSeasonData = seasonList[1] || seasonList[0];
+        }
+      });
 
-    if (previousSeasonData) {
+    if (seasonData) {
       return {
-        seasonId: previousSeasonData._id
+        seasonId: seasonData._id
       };
     }
     else {
@@ -155,12 +148,7 @@ Template.nav.helpers({
   },
   userStoneCount(user, stoneType) {
     return user.profile.stones[stoneType];
-  },
-  shouldShowControlCenter() {
-    return getAccessibleControlCenterPageKeys().length > 0;
-  },
-  getAccessibleControlCenterPageKeys,
-  pathForControlCenterPage
+  }
 });
 Template.nav.events({
   'click [data-login]'(event) {

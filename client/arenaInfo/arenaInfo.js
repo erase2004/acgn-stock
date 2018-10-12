@@ -10,6 +10,7 @@ import { dbArenaLog } from '/db/dbArenaLog';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { shouldStopSubscribe } from '../utils/idle';
 
+const lastRoundEndTime = new Date(Meteor.settings.public.lastRoundEndTime);
 const rDisplayPanelList = new ReactiveVar(['fighterList']);
 inheritedShowLoadingOnSubscribing(Template.arenaInfo);
 Template.arenaInfo.onCreated(function() {
@@ -30,7 +31,7 @@ Template.arenaInfo.helpers({
     const arenaData = dbArena.findOne(arenaId);
     // 更換大賽資訊，自動依據大賽是否已過期來重設選手排列依據
     if (arenaData) {
-      if (Date.now() > arenaData.endDate) {
+      if (lastRoundEndTime.getTime() > arenaData.endDate) {
         rFighterSortBy.set('index');
         rFighterSortDir.set(1);
       }
@@ -43,7 +44,7 @@ Template.arenaInfo.helpers({
     return arenaData;
   },
   nowIsBeforeTimeOf(date) {
-    return date ? (Date.now() <= date.getTime()) : false;
+    return date ? (lastRoundEndTime.getTime() <= date.getTime()) : false;
   },
   isDisplayPanel(panelType) {
     return _.contains(rDisplayPanelList.get(), panelType);
@@ -231,7 +232,7 @@ Template.arenaFighterTable.onRendered(function() {
   resetSortSetting(this.data);
 });
 function resetSortSetting(data) {
-  if (Date.now() > data.endDate.getTime()) {
+  if (lastRoundEndTime.getTime() > data.endDate.getTime()) {
     rFighterSortBy.set('index');
     rFighterSortDir.set(1);
   }

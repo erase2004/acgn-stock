@@ -1,13 +1,10 @@
 import { $ } from 'meteor/jquery';
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { dbProducts } from '/db/dbProducts';
 import { dbSeason } from '/db/dbSeason';
-import { dbVoteRecord } from '/db/dbVoteRecord';
 
-import { voteProduct, adminEditProduct, banProduct } from '../utils/methods';
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { shouldStopSubscribe } from '../utils/idle';
 
@@ -181,29 +178,4 @@ Template.productListBySeasonTable.events({
 
 Template.productInfoBySeasonTable.onCreated(function() {
   this.subscribe('currentUserVoteRecord', this.data.companyId);
-});
-Template.productInfoBySeasonTable.helpers({
-  cannotVote() {
-    const userId = Meteor.userId();
-    const { companyId, state } = Template.currentData();
-
-    return ! userId || state !== 'marketing' || dbVoteRecord.find({ companyId, userId }).count() > 0;
-  }
-});
-Template.productInfoBySeasonTable.events({
-  'click [data-vote-product]'(event, templateInstance) {
-    event.preventDefault();
-    const productData = templateInstance.data;
-    voteProduct(productData._id, productData.companyId);
-  },
-  'click [data-ban-product]'(event, templateInstance) {
-    event.preventDefault();
-    const { _id: productId } = templateInstance.data;
-    banProduct(productId);
-  },
-  'click [data-edit-product]'(event) {
-    event.preventDefault();
-    const productId = $(event.currentTarget).attr('data-edit-product');
-    adminEditProduct(productId);
-  }
 });

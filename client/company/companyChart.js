@@ -7,6 +7,8 @@ import { globalVariable } from '/client/utils/globalVariable';
 import { currencyFormat, setChartTheme } from '/client/utils/helpers';
 import { paramCompanyId } from './helpers';
 
+const lastRoundEndTime = new Date(Meteor.settings.public.lastRoundEndTime);
+
 Template.companyChart.onCreated(function() {
   this.strChartType = '';
   this.$chart = null;
@@ -59,7 +61,7 @@ function drawLineChart(templateInstance) {
     templateInstance.$chart.empty();
   }
 
-  const toTime = Date.now();
+  const toTime = lastRoundEndTime.getTime();
   const fromTime = toTime - 1000 * 60 * 60 * 24;
   const companyId = paramCompanyId();
   Meteor.call('queryStocksPrice', companyId, { begin: fromTime }, (error, result) => {
@@ -140,7 +142,7 @@ function drawCandleStickChart(templateInstance) {
 
   const count = Math.min(Math.floor((1000 * 86400 * 14) / unitTime) - 1, 40);
 
-  const toTime = Math.floor(Date.now() / unitTime) * unitTime;
+  const toTime = Math.floor(lastRoundEndTime.getTime() / unitTime) * unitTime;
   const fromTime = toTime - unitTime * (count - 1);
 
   const companyId = paramCompanyId();
