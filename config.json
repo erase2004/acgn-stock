@@ -2,10 +2,10 @@
   "public": {
     "debugMode": true,
     "websiteInfo": {
-      "websiteName": "(δ)ACGN股票歷史博物館",
+      "websiteName": "(ε)ACGN股票歷史博物館",
       "description": "｜ 尋找你的老婆！ \n｜ 喜歡嗎？那麼就入股吧！",
-      "domainName": "r4-museum.acgn-stock.com",
-      "image": "https://r4-museum.acgn-stock.com/ms-icon-310x310.png",
+      "domainName": "r5-museum.acgn-stock.com",
+      "image": "https://r5-museum.acgn-stock.com/ms-icon-310x310.png",
       "timezone": 8
     },
     "intervalTimer": 60000,
@@ -40,7 +40,9 @@
       "userReportedViolationCases": 10,
       "companyViolationCases": 10,
       "fscLogs": 30,
-      "companyOrders": 10
+      "companyOrders": 10,
+      "arenaFighterList": 20,
+      "arenaLog": 30
     },
     "productFinalSaleTime": 86400000,
     "systemProductVotingReward": 4096,
@@ -123,7 +125,7 @@
         }
       }
     },
-    "lastRoundEndTime": "2018-10-07T02:00:01.000Z"
+    "lastRoundEndTime": "2019-01-06T10:00:04.000Z"
   },
   "autoRedirectDomainPortSettings": {
     "8880": "test.acgn-stock.com"

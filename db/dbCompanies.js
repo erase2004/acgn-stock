@@ -5,7 +5,6 @@ import SimpleSchema from 'simpl-schema';
 
 // 公司資料集
 export const dbCompanies = new Mongo.Collection('companies');
-export default dbCompanies;
 
 // 公司評等名稱
 export const gradeNameList = ['S', 'A', 'B', 'C', 'D'];
@@ -46,7 +45,11 @@ const schema = new SimpleSchema({
     min: 1,
     max: 100
   },
-  // 總經理userId
+  // 創立者 userId
+  founder: {
+    type: String
+  },
+  // 經理人 userId
   manager: {
     type: String
   },
@@ -56,7 +59,7 @@ const schema = new SimpleSchema({
     max: 20,
     defaultValue: '董事長'
   },
-  // 董事長userId
+  // 董事長 userId
   chairman: {
     type: String
   },

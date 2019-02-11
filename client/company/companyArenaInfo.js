@@ -42,9 +42,6 @@ Template.companyArenaInfo.helpers({
   getAttributeNumber(attribute, number) {
     return getAttributeNumber(attribute, number);
   },
-  totalInvestedAmount() {
-    return getTotalInvestedAmount(this);
-  },
   arenaMinInvestedAmount() {
     return Meteor.settings.public.arenaMinInvestedAmount;
   },
