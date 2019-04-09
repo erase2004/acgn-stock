@@ -15,7 +15,7 @@ WebApp.connectHandlers.use('/companyInfo', (req, res) => {
 
   const companyData = dbCompanyArchive.findOne(companyId, {
     fields: {
-      name: 1,
+      companyName: 1,
       status: 1
     }
   });

@@ -3,21 +3,19 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { DocHead } from 'meteor/kadira:dochead';
 import { rMainTheme } from '/client/utils/styles';
-import { pageNameHash } from '/routes';
+import { getCurrentPage, getCurrentPageFullTitle } from '/routes';
 import { rAccountDialogMode } from './accountDialog';
 import { rShowAlertDialog, alertDialog } from './alertDialog';
 
 Template.layout.onCreated(function() {
   this.autorun(() => {
-    const title = pageNameHash[FlowRouter.getRouteName()];
-    DocHead.setTitle(`${Meteor.settings.public.websiteInfo.websiteName} - ${title}`);
+    FlowRouter.watchPathChange();
+    DocHead.setTitle(getCurrentPageFullTitle());
   });
 });
 
 Template.layout.helpers({
-  currentPage() {
-    return FlowRouter.getRouteName();
-  },
+  currentPage: getCurrentPage,
   showAccountDialog() {
     return rAccountDialogMode.get() && ! Meteor.user();
   },

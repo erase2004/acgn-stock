@@ -7,7 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { dbArena } from '/db/dbArena';
 import { dbSeason } from '/db/dbSeason';
 import { stoneTypeList } from '/db/dbCompanyStones';
-import { pageNameHash } from '/routes';
+import { getPageTitle, getCurrentPage } from '/routes';
 import { rMainTheme } from '../utils/styles';
 import { shouldStopSubscribe } from '../utils/idle';
 import { handleError } from '../utils/handleError';
@@ -141,7 +141,7 @@ Template.nav.helpers({
     return FlowRouter.path(page, params);
   },
   getLinkText(page) {
-    return pageNameHash[page];
+    return getPageTitle(page);
   },
   stoneTypeList() {
     return stoneTypeList;
@@ -205,13 +205,13 @@ Template.nav.events({
 
 Template.navLink.helpers({
   getClassList() {
-    return 'nav-item' + (FlowRouter.getRouteName() === this.page ? ' active' : '');
+    return 'nav-item' + (getCurrentPage() === this.page ? ' active' : '');
   },
   getHref() {
     return FlowRouter.path(this.page, this.params);
   },
   getLinkText() {
-    return pageNameHash[this.page];
+    return getPageTitle(this.page);
   }
 });
 
@@ -229,7 +229,7 @@ Template.navCompanyLink.onRendered(function() {
         const path = FlowRouter.path('companyDetail', { companyId });
         $link
           .attr('href', path)
-          .text(companyData.name);
+          .text(companyData.companyName || companyData.name);
       },
       error: () => {
         $link.text('???');

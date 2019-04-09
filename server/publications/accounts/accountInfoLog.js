@@ -12,16 +12,6 @@ Meteor.publish('accountInfoLog', function({ userId, logTypeGroups, offset }) {
   check(logTypeGroups, Match.Optional([String]));
   check(offset, Match.Integer);
 
-  // 處理金管會紀錄最後讀取時間
-  // TODO: 將通知獨立於 log 機制
-  if (this.userId === userId && logTypeGroups && logTypeGroups.includes('fsc')) {
-    Meteor.users.update({
-      _id: userId
-    }, {
-      $set: { 'profile.lastReadFscLogDate': new Date() }
-    });
-  }
-
   const firstLogData = dbLog.findOne({ userId }, { sort: { createdAt: 1 } });
   const firstLogDate = firstLogData ? firstLogData.createdAt : new Date();
 

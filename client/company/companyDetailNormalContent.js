@@ -1,12 +1,12 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-
+import { isHeadlessChrome } from '/client/utils/isHeadlessChrome';
 import { paramCompany, paramCompanyId } from './helpers';
 
 const TAGS_LIMIT = 3;
 
 Template.companyDetailNormalContent.onCreated(function() {
-  this.showAllTags = new ReactiveVar(false);
+  this.showAllTags = new ReactiveVar(isHeadlessChrome());
   this.autorunWithIdleSupport(() => {
     const companyId = paramCompanyId();
     if (companyId) {

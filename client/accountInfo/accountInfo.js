@@ -6,10 +6,13 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
+import { getCurrentPageFullTitle } from '/routes';
 import { dbCompanies } from '/db/dbCompanies';
 import { dbEmployees } from '/db/dbEmployees';
 import { dbVips } from '/db/dbVips';
 import { roleDisplayName } from '/db/users';
+import { setPrerenderTitleReady } from '/client/utils/prerenderReady';
+
 import { inheritedShowLoadingOnSubscribing } from '../layout/loading';
 import { shouldStopSubscribe } from '../utils/idle';
 import { accountInfoCommonHelpers, paramUserId, paramUser, isCurrentUser } from './helpers';
@@ -35,7 +38,11 @@ Template.accountInfo.onCreated(function() {
   this.autorun(() => {
     const user = paramUser();
     if (user) {
-      DocHead.setTitle(`${Meteor.settings.public.websiteInfo.websiteName} - 「${user.profile.name}」帳號資訊`);
+      DocHead.setTitle(getCurrentPageFullTitle(user.profile.name));
+      setPrerenderTitleReady(true);
+    }
+    else {
+      setPrerenderTitleReady(false);
     }
   });
 });

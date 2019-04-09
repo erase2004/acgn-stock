@@ -13,11 +13,6 @@ Meteor.publish('violationCaseDetail', function(violationCaseId) {
   debug.log('publish violationCaseDetail');
   check(violationCaseId, String);
 
-  // 消除未讀標記
-  if (this.userId) {
-    dbViolationCases.update(violationCaseId, { $pull: { unreadUsers: this.userId } });
-  }
-
   const excludedFields = { };
 
   if (! this.userId || ! hasRole(Meteor.users.findOne(this.userId), 'fscMember')) {

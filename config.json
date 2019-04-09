@@ -2,11 +2,15 @@
   "public": {
     "debugMode": true,
     "websiteInfo": {
-      "websiteName": "(ε)ACGN股票歷史博物館",
+      "websiteName": "(ζ)ACGN股票歷史博物館",
       "description": "｜ 尋找你的老婆！ \n｜ 喜歡嗎？那麼就入股吧！",
-      "domainName": "r5-museum.acgn-stock.com",
-      "image": "https://r5-museum.acgn-stock.com/ms-icon-310x310.png",
+      "domainName": "r6-museum.acgn-stock.com",
+      "image": "https://r6-museum.acgn-stock.com/ms-icon-310x310.png",
       "timezone": 8
+    },
+    "prerender": {
+      "use": false,
+      "url": "http://127.0.0.1:3900/"
     },
     "intervalTimer": 60000,
     "newUserBirthStones": 1,
@@ -125,7 +129,7 @@
         }
       }
     },
-    "lastRoundEndTime": "2019-01-06T10:00:04.000Z"
+    "lastRoundEndTime": "2019-04-07T10:00:04.000Z"
   },
   "autoRedirectDomainPortSettings": {
     "8880": "test.acgn-stock.com"
