@@ -304,7 +304,7 @@ function drawCompanyPriceRankTable(templateInstance) {
       },
       dataType: 'json',
       success: (companyData) => {
-        const companyName = companyData.companyName || companyData.name;
+        const { companyName } = companyData;
         if (companyName.length > 8) {
           companyNameHash[rankData.companyId] = companyName.slice(0, 7) + '...';
         }
@@ -414,7 +414,7 @@ function drawCompanyProfitRankTable(templateInstance) {
       },
       dataType: 'json',
       success: (companyData) => {
-        const companyName = companyData.companyName || companyData.name;
+        const { companyName } = companyData;
         if (companyName.length > 8) {
           companyNameHash[rankData.companyId] = companyName.slice(0, 7) + '...';
         }
@@ -544,7 +544,7 @@ function drawCompanyValueRankTable(templateInstance) {
       },
       dataType: 'json',
       success: (companyData) => {
-        const companyName = companyData.companyName || companyData.name;
+        const { companyName } = companyData;
         if (companyName.length > 8) {
           companyNameHash[rankData.companyId] = companyName.slice(0, 7) + '...';
         }
@@ -705,7 +705,7 @@ function drawCompanyCapitalRankTable(templateInstance) {
       },
       dataType: 'json',
       success: (companyData) => {
-        const companyName = companyData.companyName || companyData.name;
+        const { companyName } = companyData;
         if (companyName.length > 8) {
           companyNameHash[rankData.companyId] = companyName.slice(0, 7) + '...';
         }
