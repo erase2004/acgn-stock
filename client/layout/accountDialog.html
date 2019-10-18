@@ -31,15 +31,6 @@
       placeholder="請輸入您的PTT帳號"
     />
   </div>
-  <div class="form-group">
-    <label for="loginPassword">密碼：</label>
-    <input
-      id="loginPassword"
-      class="form-control"
-      type="password"
-      placeholder="請輸入登入本系統要使用的登入密碼，建議不要跟PTT密碼相同。"
-    />
-  </div>
 </template>
 
 <template name="accountDialogBodyLoginBahamut">
@@ -52,13 +43,16 @@
       placeholder="請輸入您的巴哈姆特帳號"
     />
   </div>
+</template>
+
+<template name="accountDialogBodyLoginGoogle">
   <div class="form-group">
-    <label for="loginPassword">密碼：</label>
+    <label for="loginUserName">Google帳號：</label>
     <input
-      id="loginPassword"
+      id="loginUserName"
       class="form-control"
-      type="password"
-      placeholder="請輸入登入本系統要使用的登入密碼，建議不要跟巴哈姆特密碼相同。"
+      type="text"
+      placeholder="請輸入您完整的Google帳號"
     />
   </div>
 </template>
