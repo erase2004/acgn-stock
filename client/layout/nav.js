@@ -11,7 +11,6 @@ import { stoneTypeList } from '/db/dbCompanyStones';
 import { pageNameHash } from '/routes';
 import { rMainTheme } from '../utils/styles';
 import { shouldStopSubscribe } from '../utils/idle';
-import { handleError } from '../utils/handleError';
 import { globalVariable } from '../utils/globalVariable';
 import { rAccountDialogMode } from './accountDialog';
 
@@ -164,12 +163,11 @@ Template.nav.events({
         rAccountDialogMode.set('loginBahamut');
         break;
       }
+      case 'Google': {
+        rAccountDialogMode.set('loginGoogle');
+        break;
+      }
       default: {
-        Meteor['loginWith' + loginType]((error) => {
-          if (error && error.reason) {
-            handleError(error);
-          }
-        });
         break;
       }
     }
