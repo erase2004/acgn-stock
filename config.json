@@ -1,7 +1,7 @@
 {
   "public": {
     "debugMode": true,
-    "websiteName": "ACGN股票歷史博物館",
+    "websiteName": "(α)ACGN股票歷史博物館",
     "intervalTimer": 60000,
     "foundExpireTime": 43200000,
     "foundationNeedUsers": 10,
