@@ -3,19 +3,21 @@ import { check } from 'meteor/check';
 
 import { hasRole } from '/db/users';
 import { dbViolationCases } from '/db/dbViolationCases';
-import { dbViolationCaseActionLogs } from '/db/dbViolationCaseActionLogs';
+import { dbViolationCaseActionLogs, actionMap } from '/db/dbViolationCaseActionLogs';
 import { limitSubscription } from '/server/imports/utils/rateLimit';
 import { debug } from '/server/imports/utils/debug';
+import { publishWithTransformation } from '/server/imports/utils/publishWithTransformation';
 
-const RESTRICTED_FIELDS = ['informer', 'unreadUsers'];
+const RESTRICTED_FIELDS = ['unreadUsers'];
 
 Meteor.publish('violationCaseDetail', function(violationCaseId) {
   debug.log('publish violationCaseDetail');
   check(violationCaseId, String);
 
+  const isFscMember = this.userId && hasRole(Meteor.users.findOne(this.userId), 'fscMember');
   const excludedFields = { };
 
-  if (! this.userId || ! hasRole(Meteor.users.findOne(this.userId), 'fscMember')) {
+  if (! isFscMember) {
     Object.assign(excludedFields, RESTRICTED_FIELDS.reduce((obj, field) => {
       obj[field] = 0;
 
@@ -23,10 +25,33 @@ Meteor.publish('violationCaseDetail', function(violationCaseId) {
     }, {}));
   }
 
-  return [
-    dbViolationCases.find(violationCaseId, { fields: excludedFields }),
-    dbViolationCaseActionLogs.find({ violationCaseId }, { sort: { executedAt: 1 } })
-  ];
+  publishWithTransformation(this, {
+    collection: 'violationCases',
+    cursor: dbViolationCases.find(violationCaseId, { fields: excludedFields }),
+    transform: (fields) => {
+      const result = { ...fields };
+      if (! isFscMember && result.informer !== this.userId) {
+        delete result.informer;
+      }
+
+      return result;
+    }
+  });
+
+  publishWithTransformation(this, {
+    collection: 'violationCaseActionLogs',
+    cursor: dbViolationCaseActionLogs.find({ violationCaseId }, { sort: { executedAt: 1 } }),
+    transform: (fields) => {
+      const result = { ...fields };
+      if (actionMap[result.action].allowedIdentity === 'informer' && ! isFscMember && result.executor !== this.userId) {
+        delete result.executor;
+      }
+
+      return result;
+    }
+  });
+
+  this.ready();
 });
 // 一分鐘最多20次
 limitSubscription('violationCaseDetail', 20);
