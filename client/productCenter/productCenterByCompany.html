@@ -51,19 +51,6 @@
           <td class="text-left px-md-1" data-title="產品名稱">
             <div class="product-name">{{>productLink product._id}}</div>
             <div class="small product-description">{{product.description}}</div>
-            {{#if currentUserHasRole 'fscMember'}}
-              <div class="small text-info mt-2">
-                識別碼：{{product._id}}
-              </div>
-              <div class="small text-info">
-                由 {{> userLink product.creator}} 於 {{formatDateTimeText product.createdAt}} 建立
-              </div>
-              <div class="small text-info">
-                {{#if product.updatedAt}}
-                  由 {{> userLink product.updatedBy }} 於 {{formatDateTimeText product.createdAt}} 最後編輯
-                {{/if}}
-              </div>
-            {{/if}}
           </td>
           <td class="text-center text-truncate" data-title="類別">
             {{product.type}}
