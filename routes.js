@@ -103,7 +103,8 @@ FlowRouter.route('/arenaInfo/:arenaId?', { name: 'arenaInfo' });
 
 FlowRouter.route('/seasonalReport/:seasonId?', { name: 'seasonalReport' });
 
-FlowRouter.route('/accountInfo/:userId?', { name: 'accountInfo' });
+const accountRoute = FlowRouter.group({ prefix: '/accountInfo' });
+accountRoute.route('/:userId?', { name: 'accountInfo' });
 
 const ruleDiscussRoute = FlowRouter.group({ prefix: '/ruleDiscuss' });
 ruleDiscussRoute.route('/', { name: 'ruleAgendaList' });
