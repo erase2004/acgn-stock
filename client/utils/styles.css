@@ -226,6 +226,7 @@ body {
   color: #000;
   padding: 0px;
   max-width: 600px;
+  max-height: 600px;
   border: 1px solid #dddddd;
   border-radius: 5px;
   box-shadow: 6px 6px 6px rgba(0,0,0,0.23);
@@ -272,6 +273,7 @@ body {
 .account-card .picture img {
   width: 100%;
   max-width: 100%;
+  max-height: 500px;
   object-fit: cover;
   border-radius: 10%;
 }
